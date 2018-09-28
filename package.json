@@ -1,0 +1,22 @@
+{
+  "name": "lab2tweb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "js/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Etnarion/lab2-TWEB.git"
+  },
+  "author": "SM and AK",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Etnarion/lab2-TWEB/issues"
+  },
+  "homepage": "https://github.com/Etnarion/lab2-TWEB#readme",
+  "dependencies": {
+    "chart.js": "^2.7.2"
+  }
+}
