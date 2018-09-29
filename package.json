@@ -1,26 +1,19 @@
 {
-  "name": "lab2tweb",
+  "name": "lab2",
   "version": "1.0.0",
   "description": "",
-  "main": "js/app.js",
+  "main": "index.js",
   "scripts": {
-    "test": "mocha test/**/*.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Etnarion/lab2-TWEB.git"
   },
-  "author": "SM and AK",
+  "author": "AK and SM",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Etnarion/lab2-TWEB/issues"
   },
-  "homepage": "https://github.com/Etnarion/lab2-TWEB#readme",
-  "dependencies": {
-    "chart.js": "^2.7.2"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^5.2.0"
-  }
+  "homepage": "https://github.com/Etnarion/lab2-TWEB#readme"
 }
