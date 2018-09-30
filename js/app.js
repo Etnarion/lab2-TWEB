@@ -4,16 +4,11 @@ var position = require('mouse-position')
 var array = new Array(60);
 for (var i = 0; i < array.length; i++) {
   array[i] = new Array(80);
-  array[i].fill('#000');
+  array[i].fill('#fff');
 }
 var colors = new Array(4);
 colors = [
-  ['#0061ff', '#01af4d'], 
-  ['#fffa00', '#d10092'],
-  ['#d2a30', '#d1af92'],
-  ['#26af0', '#ffaa32'],
-  ['#4f4a00', '#d1f292'],
-  ['#df6200', '#d154092']
+  ['#0061ff', '#01af4d', '#fffa00', '#d10092', '#d2a30', '#d1af92', '#26af0', '#ffaa32', '#4f4a00', '#d1f292', '#df6200', '#d154092']
 ]
 
 const size = 9.5;
@@ -33,7 +28,7 @@ var colorPicker = grid(colors, {
 var mouseGrid = position(pixels.canvas)
 
 var row, column, color
-var colorPick = '#000'
+var colorPick = '#fff'
 
 pixels.canvas.onclick = function(event){
   row = Math.floor(mouseGrid[1] / pixelOffset)
@@ -59,6 +54,6 @@ document.getElementById("btnSave").onclick = function(event) {
 }
 
 document.getElementById("grid").appendChild(pixels.canvas)
-document.getElementById("grid").appendChild(colorPicker.canvas)
+document.getElementById("colorPicker").appendChild(colorPicker.canvas)
 
 module.exports = function (n) { return n * 111 }
