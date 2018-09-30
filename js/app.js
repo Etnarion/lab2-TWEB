@@ -7,10 +7,22 @@ for (var i = 0; i < array.length; i++) {
   array[i].fill('#000');
 }
 var colors = new Array(4);
-colors = [['#0061ff', '#01af4d'], ['#fffa00', '#d10092']]
+colors = [
+  ['#0061ff', '#01af4d'], 
+  ['#fffa00', '#d10092'],
+  ['#d2a30', '#d1af92'],
+  ['#26af0', '#ffaa32'],
+  ['#4f4a00', '#d1f292'],
+  ['#df6200', '#d154092']
+]
+
+const size = 9.5;
+const padding = 0.5;
+const pixelOffset = size + padding;
+
 var pixels = grid(array, {
-  size: 9.5,
-  padding: 0.5
+  size: size,
+  padding: padding
 })
 
 var colorPicker = grid(colors, {
@@ -24,8 +36,8 @@ var row, column, color
 var colorPick = '#000'
 
 pixels.canvas.onclick = function(event){
-  row = Math.floor(mouseGrid[1] / 10)
-  column = Math.floor(mouseGrid[0] / 10)
+  row = Math.floor(mouseGrid[1] / pixelOffset)
+  column = Math.floor(mouseGrid[0] / pixelOffset)
   color = colorPick
   array[row][column] = color
   pixels.update(array)
@@ -41,7 +53,12 @@ colorPicker.canvas.onclick = function(event) {
   colorPick = colors[row][column]
 }
 
-document.body.appendChild(pixels.canvas)
-document.body.appendChild(colorPicker.canvas)
+document.getElementById("btnSave").onclick = function(event) {
+  //export grid as file
+  alert("Hallo");
+}
+
+document.getElementById("grid").appendChild(pixels.canvas)
+document.getElementById("grid").appendChild(colorPicker.canvas)
 
 module.exports = function (n) { return n * 111 }
