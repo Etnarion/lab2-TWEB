@@ -4,6 +4,8 @@ const express = require('express');
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
 var bodyParser = require('body-parser');
+// import ObjectId
+const ObjectId = require('mongodb').ObjectId;
 app.use(bodyParser.json({limit: '2mb'})); // support json encoded bodies
 app.use(bodyParser.urlencoded({limit: '2mb', extended: true, parameterLimit: 1000000})); // support encoded bodies
 // serve files from the public directory
@@ -36,10 +38,7 @@ app.get('/', (req, res) => {
 app.post('/save', (req, res) => {
     var id = req.body._id;
     var canvas = req.body.canvas;
-   
-    var canvasJson = JSON.stringify(canvas);
-    console.log(canvasJson);
-    db.collection("repository").updateOne({"_id": id}, {$set: {"canvas": canvasJson}}, function(err, res) {
+    db.collection("repository").updateOne({"_id": ObjectId.createFromHexString(id)}, {$set: {"canvas": canvas}}, function(err, res) {
         if (err) throw err;
         console.log("1 document updated");
     });

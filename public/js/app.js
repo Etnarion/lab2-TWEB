@@ -48,15 +48,15 @@ colorPicker.canvas.onclick = function(event) {
   colorPick = colors[row][column]
 }
 
-var id = 1;
+var id = "5bb21743c2ac6a5f6f67c4dc";
 
 document.getElementById("btnSave").onclick = function(event) {
-  $.post("/save", {_id: id, canvas: array},
-function(data) {
-  if(data ==='done') {
-    alert("Canvas saved");
-  }
-})
+  $.ajax({
+    type: "POST",
+    url: '/save',
+    data: JSON.stringify({ _id: id, canvas: array }),
+    contentType: 'application/json',
+  })
 }
 
 document.getElementById("grid").appendChild(pixels.canvas)
