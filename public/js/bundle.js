@@ -1,64 +1,4 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-
-var grid = require('pixel-grid');
-var position = require('mouse-position')
-var array = new Array(60);
-for (var i = 0; i < array.length; i++) {
-  array[i] = new Array(80);
-  array[i].fill('#fff');
-}
-var colors = new Array(4);
-colors = [
-  ['#0061ff', '#01af4d', '#fffa00', '#d10092', '#d2a30', '#d1af92', '#26af0', '#ffaa32', '#4f4a00', '#d1f292', '#df6200', '#d154092']
-]
-
-const size = 9.5;
-const padding = 0.5;
-const pixelOffset = size + padding;
-
-var pixels = grid(array, {
-  size: size,
-  padding: padding
-})
-
-var colorPicker = grid(colors, {
-  size: 40,
-  padding: 1
-})
-
-var mouseGrid = position(pixels.canvas)
-
-var row, column, color
-var colorPick = '#fff'
-
-pixels.canvas.onclick = function(event){
-  row = Math.floor(mouseGrid[1] / pixelOffset)
-  column = Math.floor(mouseGrid[0] / pixelOffset)
-  color = colorPick
-  array[row][column] = color
-  pixels.update(array)
-};
-
-
-
-mouseColor = position(colorPicker.canvas)
-
-colorPicker.canvas.onclick = function(event) {
-  row = Math.floor(mouseColor[1] / 41)
-  column = Math.floor(mouseColor[0] / 41)
-  colorPick = colors[row][column]
-}
-
-document.getElementById("btnSave").onclick = function(event) {
-  //export grid as file
-  alert("Hallo");
-}
-
-document.getElementById("grid").appendChild(pixels.canvas)
-document.getElementById("colorPicker").appendChild(colorPicker.canvas)
-
-module.exports = function (n) { return n * 111 }
-},{"mouse-position":11,"pixel-grid":13}],2:[function(require,module,exports){
 /* MIT license */
 
 module.exports = {
@@ -758,7 +698,7 @@ for (var key in cssKeywords) {
   reverseKeywords[JSON.stringify(cssKeywords[key])] = key;
 }
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 var conversions = require("./conversions");
 
 var convert = function() {
@@ -851,7 +791,7 @@ Converter.prototype.getValues = function(space) {
 });
 
 module.exports = convert;
-},{"./conversions":2}],4:[function(require,module,exports){
+},{"./conversions":1}],3:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1155,7 +1095,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 module.exports = function flatten(list, depth) {
   depth = (typeof depth == 'number') ? depth : Infinity;
 
@@ -1180,7 +1120,7 @@ module.exports = function flatten(list, depth) {
   }
 };
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 
 /**
  * isArray
@@ -1215,7 +1155,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -1238,7 +1178,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*!
  * is-number <https://github.com/jonschlinkert/is-number>
  *
@@ -1259,7 +1199,7 @@ module.exports = function isNumber(num) {
   return (n - n + 1) >= 0 && num !== '';
 };
 
-},{"kind-of":10}],9:[function(require,module,exports){
+},{"kind-of":9}],8:[function(require,module,exports){
 'use strict';
 
 var strValue = String.prototype.valueOf;
@@ -1281,7 +1221,7 @@ module.exports = function isString(value) {
 	return hasToStringTag ? tryStringObject(value) : toStr.call(value) === strClass;
 };
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var isBuffer = require('is-buffer');
 var toString = Object.prototype.toString;
 
@@ -1399,7 +1339,7 @@ module.exports = function kindOf(val) {
   return 'object';
 };
 
-},{"is-buffer":7}],11:[function(require,module,exports){
+},{"is-buffer":6}],10:[function(require,module,exports){
 var Emitter = require('events/')
 
 module.exports = attach
@@ -1451,7 +1391,7 @@ function attach(element, listener) {
 
 }
 
-},{"events/":4}],12:[function(require,module,exports){
+},{"events/":3}],11:[function(require,module,exports){
 var convert = require('color-convert');
 
 module.exports = function (cstr) {
@@ -1536,7 +1476,7 @@ module.exports = function (cstr) {
     return res;
 };
 
-},{"color-convert":3}],13:[function(require,module,exports){
+},{"color-convert":2}],12:[function(require,module,exports){
 var parse = require('parse-color')
 var isnumber = require('is-number')
 var isstring = require('is-string')
@@ -1646,7 +1586,7 @@ Pixels.prototype.update = function (data) {
 
 module.exports = Pixels
 
-},{"./util/convert":14,"./util/layout":15,"is-array":6,"is-number":8,"is-string":9,"parse-color":12,"regl":48}],14:[function(require,module,exports){
+},{"./util/convert":13,"./util/layout":14,"is-array":5,"is-number":7,"is-string":8,"parse-color":11,"regl":47}],13:[function(require,module,exports){
 var flatten = require('flatten')
 var isarray = require('is-array')
 var isnumber = require('is-number')
@@ -1673,7 +1613,7 @@ function convert (data) {
 
 module.exports = convert
 
-},{"flatten":5,"is-array":6,"is-number":8,"is-string":9,"parse-color":12}],15:[function(require,module,exports){
+},{"flatten":4,"is-array":5,"is-number":7,"is-string":8,"parse-color":11}],14:[function(require,module,exports){
 function layout (rows, columns, padding, size, aspect) {
   var grid = []
 
@@ -1690,7 +1630,7 @@ function layout (rows, columns, padding, size, aspect) {
 
 module.exports = layout
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var GL_FLOAT = 5126
 
 function AttributeRecord () {
@@ -1729,7 +1669,7 @@ module.exports = function wrapAttributeState (
   }
 }
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var check = require('./util/check')
 var isTypedArray = require('./util/is-typed-array')
 var isNDArrayLike = require('./util/is-ndarray')
@@ -2106,7 +2046,7 @@ module.exports = function wrapBufferState (gl, stats, config) {
   }
 }
 
-},{"./constants/arraytypes.json":18,"./constants/dtypes.json":19,"./constants/usage.json":21,"./util/check":35,"./util/is-ndarray":40,"./util/is-typed-array":41,"./util/pool":43,"./util/values":46}],18:[function(require,module,exports){
+},{"./constants/arraytypes.json":17,"./constants/dtypes.json":18,"./constants/usage.json":20,"./util/check":34,"./util/is-ndarray":39,"./util/is-typed-array":40,"./util/pool":42,"./util/values":45}],17:[function(require,module,exports){
 module.exports={
   "[object Int8Array]": 5120
 , "[object Int16Array]": 5122
@@ -2120,7 +2060,7 @@ module.exports={
 , "[object ArrayBuffer]": 5121
 }
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports={
   "int8": 5120
 , "int16": 5122
@@ -2132,7 +2072,7 @@ module.exports={
 , "float32": 5126
 }
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports={
   "points": 0,
   "point": 0,
@@ -2146,14 +2086,14 @@ module.exports={
   "triangle fan": 6
 }
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports={
   "static": 35044,
   "dynamic": 35048,
   "stream": 35040
 }
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var check = require('./util/check')
 var createEnvironment = require('./util/codegen')
 var loop = require('./util/loop')
@@ -5497,7 +5437,7 @@ module.exports = function reglCore (
   }
 }
 
-},{"./constants/dtypes.json":19,"./constants/primitives.json":20,"./dynamic":23,"./util/check":35,"./util/codegen":37,"./util/is-array-like":39,"./util/is-ndarray":40,"./util/is-typed-array":41,"./util/loop":42}],23:[function(require,module,exports){
+},{"./constants/dtypes.json":18,"./constants/primitives.json":19,"./dynamic":22,"./util/check":34,"./util/codegen":36,"./util/is-array-like":38,"./util/is-ndarray":39,"./util/is-typed-array":40,"./util/loop":41}],22:[function(require,module,exports){
 var VARIABLE_COUNTER = 0
 
 var DYN_FUNC = 0
@@ -5575,7 +5515,7 @@ module.exports = {
   accessor: toAccessorString
 }
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var check = require('./util/check')
 var isTypedArray = require('./util/is-typed-array')
 var isNDArrayLike = require('./util/is-ndarray')
@@ -5858,7 +5798,7 @@ module.exports = function wrapElementsState (gl, extensions, bufferState, stats)
   }
 }
 
-},{"./constants/primitives.json":20,"./constants/usage.json":21,"./util/check":35,"./util/is-ndarray":40,"./util/is-typed-array":41,"./util/values":46}],25:[function(require,module,exports){
+},{"./constants/primitives.json":19,"./constants/usage.json":20,"./util/check":34,"./util/is-ndarray":39,"./util/is-typed-array":40,"./util/values":45}],24:[function(require,module,exports){
 var check = require('./util/check')
 
 module.exports = function createExtensionCache (gl, config) {
@@ -5890,7 +5830,7 @@ module.exports = function createExtensionCache (gl, config) {
   }
 }
 
-},{"./util/check":35}],26:[function(require,module,exports){
+},{"./util/check":34}],25:[function(require,module,exports){
 var check = require('./util/check')
 var values = require('./util/values')
 var extend = require('./util/extend')
@@ -6772,7 +6712,7 @@ module.exports = function wrapFBOState (
   })
 }
 
-},{"./util/check":35,"./util/extend":38,"./util/values":46}],27:[function(require,module,exports){
+},{"./util/check":34,"./util/extend":37,"./util/values":45}],26:[function(require,module,exports){
 var GL_SUBPIXEL_BITS = 0x0D50
 var GL_RED_BITS = 0x0D52
 var GL_GREEN_BITS = 0x0D53
@@ -6866,7 +6806,7 @@ module.exports = function (gl, extensions) {
   }
 }
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var check = require('./util/check')
 var isTypedArray = require('./util/is-typed-array')
 
@@ -6980,7 +6920,7 @@ module.exports = function wrapReadPixels (
   return readPixels
 }
 
-},{"./util/check":35,"./util/is-typed-array":41}],29:[function(require,module,exports){
+},{"./util/check":34,"./util/is-typed-array":40}],28:[function(require,module,exports){
 var check = require('./util/check')
 var values = require('./util/values')
 
@@ -7212,7 +7152,7 @@ module.exports = function (gl, extensions, limits, stats, config) {
   }
 }
 
-},{"./util/check":35,"./util/values":46}],30:[function(require,module,exports){
+},{"./util/check":34,"./util/values":45}],29:[function(require,module,exports){
 var check = require('./util/check')
 var values = require('./util/values')
 
@@ -7423,7 +7363,7 @@ module.exports = function wrapShaderState (gl, stringStore, stats, config) {
   }
 }
 
-},{"./util/check":35,"./util/values":46}],31:[function(require,module,exports){
+},{"./util/check":34,"./util/values":45}],30:[function(require,module,exports){
 
 module.exports = function stats () {
   return {
@@ -7439,7 +7379,7 @@ module.exports = function stats () {
   }
 }
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = function createStringStore () {
   var stringIds = {'': 0}
   var stringValues = ['']
@@ -7460,7 +7400,7 @@ module.exports = function createStringStore () {
   }
 }
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var check = require('./util/check')
 var extend = require('./util/extend')
 var values = require('./util/values')
@@ -9029,7 +8969,7 @@ module.exports = function createTextureSet (
   }
 }
 
-},{"./constants/arraytypes.json":18,"./util/check":35,"./util/extend":38,"./util/is-array-like":39,"./util/is-ndarray":40,"./util/is-typed-array":41,"./util/pool":43,"./util/to-half-float":45,"./util/values":46}],34:[function(require,module,exports){
+},{"./constants/arraytypes.json":17,"./util/check":34,"./util/extend":37,"./util/is-array-like":38,"./util/is-ndarray":39,"./util/is-typed-array":40,"./util/pool":42,"./util/to-half-float":44,"./util/values":45}],33:[function(require,module,exports){
 var GL_QUERY_RESULT_EXT = 0x8866
 var GL_QUERY_RESULT_AVAILABLE_EXT = 0x8867
 var GL_TIME_ELAPSED_EXT = 0x88BF
@@ -9165,7 +9105,7 @@ module.exports = function (gl, extensions) {
   }
 }
 
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 // Error checking and parameter validation.
 //
 // Statements for the form `check.someProcedure(...)` get removed by
@@ -9804,14 +9744,14 @@ module.exports = extend(check, {
   textureCube: checkTextureCube
 })
 
-},{"./extend":38,"./is-typed-array":41}],36:[function(require,module,exports){
+},{"./extend":37,"./is-typed-array":40}],35:[function(require,module,exports){
 /* globals performance */
 module.exports =
   (typeof performance !== 'undefined' && performance.now)
   ? function () { return performance.now() }
   : function () { return +(new Date()) }
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var extend = require('./extend')
 
 function slice (x) {
@@ -9995,7 +9935,7 @@ module.exports = function createEnvironment () {
   }
 }
 
-},{"./extend":38}],38:[function(require,module,exports){
+},{"./extend":37}],37:[function(require,module,exports){
 module.exports = function (base, opts) {
   var keys = Object.keys(opts)
   for (var i = 0; i < keys.length; ++i) {
@@ -10004,13 +9944,13 @@ module.exports = function (base, opts) {
   return base
 }
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var isTypedArray = require('./is-typed-array')
 module.exports = function isArrayLike (s) {
   return Array.isArray(s) || isTypedArray(s)
 }
 
-},{"./is-typed-array":41}],40:[function(require,module,exports){
+},{"./is-typed-array":40}],39:[function(require,module,exports){
 var isTypedArray = require('./is-typed-array')
 
 module.exports = function isNDArrayLike (obj) {
@@ -10025,13 +9965,13 @@ module.exports = function isNDArrayLike (obj) {
       isTypedArray(obj.data)))
 }
 
-},{"./is-typed-array":41}],41:[function(require,module,exports){
+},{"./is-typed-array":40}],40:[function(require,module,exports){
 var dtypes = require('../constants/arraytypes.json')
 module.exports = function (x) {
   return Object.prototype.toString.call(x) in dtypes
 }
 
-},{"../constants/arraytypes.json":18}],42:[function(require,module,exports){
+},{"../constants/arraytypes.json":17}],41:[function(require,module,exports){
 module.exports = function loop (n, f) {
   var result = Array(n)
   for (var i = 0; i < n; ++i) {
@@ -10040,7 +9980,7 @@ module.exports = function loop (n, f) {
   return result
 }
 
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var loop = require('./loop')
 
 var GL_BYTE = 5120
@@ -10134,7 +10074,7 @@ module.exports = {
   freeType: freeType
 }
 
-},{"./loop":42}],44:[function(require,module,exports){
+},{"./loop":41}],43:[function(require,module,exports){
 /* globals requestAnimationFrame, cancelAnimationFrame */
 if (typeof requestAnimationFrame === 'function' &&
     typeof cancelAnimationFrame === 'function') {
@@ -10151,7 +10091,7 @@ if (typeof requestAnimationFrame === 'function' &&
   }
 }
 
-},{}],45:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var pool = require('./pool')
 
 var FLOAT = new Float32Array(1)
@@ -10197,12 +10137,12 @@ module.exports = function convertToHalfFloat (array) {
   return ushorts
 }
 
-},{"./pool":43}],46:[function(require,module,exports){
+},{"./pool":42}],45:[function(require,module,exports){
 module.exports = function (obj) {
   return Object.keys(obj).map(function (key) { return obj[key] })
 }
 
-},{}],47:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 // Context and canvas creation helper functions
 var check = require('./util/check')
 var extend = require('./util/extend')
@@ -10408,7 +10348,7 @@ module.exports = function parseArgs (args_) {
   }
 }
 
-},{"./util/check":35,"./util/extend":38}],48:[function(require,module,exports){
+},{"./util/check":34,"./util/extend":37}],47:[function(require,module,exports){
 var check = require('./lib/util/check')
 var extend = require('./lib/util/extend')
 var dynamic = require('./lib/dynamic')
@@ -10890,4 +10830,70 @@ module.exports = function wrapREGL (args) {
   return regl
 }
 
-},{"./lib/attribute":16,"./lib/buffer":17,"./lib/core":22,"./lib/dynamic":23,"./lib/elements":24,"./lib/extension":25,"./lib/framebuffer":26,"./lib/limits":27,"./lib/read":28,"./lib/renderbuffer":29,"./lib/shader":30,"./lib/stats":31,"./lib/strings":32,"./lib/texture":33,"./lib/timer":34,"./lib/util/check":35,"./lib/util/clock":36,"./lib/util/extend":38,"./lib/util/raf":44,"./lib/webgl":47}]},{},[1]);
+},{"./lib/attribute":15,"./lib/buffer":16,"./lib/core":21,"./lib/dynamic":22,"./lib/elements":23,"./lib/extension":24,"./lib/framebuffer":25,"./lib/limits":26,"./lib/read":27,"./lib/renderbuffer":28,"./lib/shader":29,"./lib/stats":30,"./lib/strings":31,"./lib/texture":32,"./lib/timer":33,"./lib/util/check":34,"./lib/util/clock":35,"./lib/util/extend":37,"./lib/util/raf":43,"./lib/webgl":46}],48:[function(require,module,exports){
+
+var grid = require('pixel-grid');
+var position = require('mouse-position')
+var array = new Array(120);
+for (var i = 0; i < array.length; i++) {
+  array[i] = new Array(160);
+  array[i].fill('#fff');
+}
+var colors = new Array(4);
+colors = [
+  ['#0061ff', '#01af4d', '#fffa00', '#d10092', '#d2a30', '#d1af92', '#26af0', '#ffaa32', '#4f4a00', '#d1f292', '#df6200', '#d154092']
+]
+
+const size = 4.8;
+const padding = 0.2;
+const pixelOffset = size + padding;
+
+var pixels = grid(array, {
+  size: size,
+  padding: padding
+})
+
+var colorPicker = grid(colors, {
+  size: 40,
+  padding: 1
+})
+
+var mouseGrid = position(pixels.canvas)
+
+var row, column, color
+var colorPick = '#fff'
+
+pixels.canvas.onclick = function(event){
+  row = Math.floor(mouseGrid[1] / pixelOffset)
+  column = Math.floor(mouseGrid[0] / pixelOffset)
+  color = colorPick
+  array[row][column] = color
+  pixels.update(array)
+};
+
+
+
+mouseColor = position(colorPicker.canvas)
+
+colorPicker.canvas.onclick = function(event) {
+  row = Math.floor(mouseColor[1] / 41)
+  column = Math.floor(mouseColor[0] / 41)
+  colorPick = colors[row][column]
+}
+
+var id = 1;
+
+document.getElementById("btnSave").onclick = function(event) {
+  $.post("/save", {_id: id, canvas: array},
+function(data) {
+  if(data ==='done') {
+    alert("Canvas saved");
+  }
+})
+}
+
+document.getElementById("grid").appendChild(pixels.canvas)
+document.getElementById("colorPicker").appendChild(colorPicker.canvas)
+
+module.exports = function (n) { return n * 111 }
+},{"mouse-position":10,"pixel-grid":12}]},{},[48]);

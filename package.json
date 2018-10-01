@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/Etnarion/lab2-TWEB#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "chart.js": "^2.7.2",
+    "express": "^4.16.3",
+    "mongodb": "^2.2.33",
     "pickr-widget": "^0.2.4",
     "pixel-grid": "^1.0.2",
     "pixel-grid-react": "0.0.4"
