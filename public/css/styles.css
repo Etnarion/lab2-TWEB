@@ -23,12 +23,27 @@ body {
     color: rgb(217, 208, 250);
 }
 
-#grid {
+#gridArea {
     margin: auto;
     width: 30%;
 }
 
-#colorPicker {
-    margin: auto;
-    width: 30%;
+#menuLeft {
+    float: left;
+    background-color: black;
+    height: 100%;
+    width: 300px;
+    color: rgb(217, 208, 250);
+}
+
+#menuLeft div {
+    width: 100%;
+    text-align: center;
+    height: 30px;
+    -webkit-transition: background-color 0.3s;
+}
+
+#menuLeft div:hover {
+    background-color: rgb(59, 59, 59);
+    -webkit-transition: background-color 0.3s;
 }

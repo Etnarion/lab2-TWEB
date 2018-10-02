@@ -43,3 +43,14 @@ app.post('/save', (req, res) => {
         console.log("1 document updated");
     });
 })
+
+app.post('/repo', (req, res) => {
+  //search database for repo with that name
+  console.log(req.body.name);
+  var repo = db.collection("repository").findOne({"name":req.body.name}).then(
+    function(data) {
+      res.send(data);
+    }
+  );
+  
+})
