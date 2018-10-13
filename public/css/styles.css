@@ -1,49 +1,80 @@
 body {
-    background-color: rgb(153, 153, 153);
-    font-family: 'KoHo', sans-serif;
-}
-
-#content {
-    background-color: rgb(58, 30, 56);
-    width: 1600px;
-    height: 1000px;
-    margin: auto;
+    background-color: rgb(255, 255, 249);
+    font-family: 'VT323', monospace;
+    height: 100%;
+    margin: 0;
 }
 
 .header {
-    background: rgb(0, 0, 0);
-    font-weight: bold;
-    font-size: 2em;
-    height: 80px;
+    background: rgb(29, 29, 29);
+    width: 100%;
+    font-size: 1.5em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: white;
 }
 
-.title {
-    width: 30%;
-    margin: auto;
-    color: rgb(217, 208, 250);
+.header a {
+    background: rgb(29, 29, 29);
+    width: 100%;
+    font-size: 1.2em;
+    display: flex;
+    flex-direction: row;
+    color: white;
+    text-decoration: none;
+}
+
+.header > div {
+    margin-right: 50px;
+}
+
+.header div:last-child {
+    margin-left: auto;
+    margin-right: 50px;
+}
+
+#pixels {
+    color: rgb(163, 147, 255);
 }
 
 #gridArea {
     margin: auto;
-    width: 30%;
+    width: 800px;
+    display: flex;
+    flex-direction: row;
+}
+
+#colorPicker {
+    float: right;
 }
 
 #menuLeft {
+    position: absolute;
     float: left;
-    background-color: black;
+    background: rgb(255, 255, 255, 0.4);
     height: 100%;
     width: 300px;
-    color: rgb(217, 208, 250);
+    color: rgb(14, 14, 14);
 }
 
 #menuLeft div {
     width: 100%;
-    text-align: center;
+    text-align: justify;
     height: 30px;
     -webkit-transition: background-color 0.3s;
+    -webkit-transition: border-radius 0.3s;
 }
 
 #menuLeft div:hover {
-    background-color: rgb(59, 59, 59);
+    border-radius: 8px;
+    background-color: rgb(235, 235, 235, 0.4);
     -webkit-transition: background-color 0.3s;
+    -webkit-transition: border-radius 0.3s;
+}
+
+#content canvas {
+    background-color: aliceblue;
+    margin-top: 50px;
+    border: 1px solid rgb(71, 71, 71);
 }

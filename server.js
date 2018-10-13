@@ -1,56 +1,115 @@
-console.log('Server-side code running');
-
+// Imports
 const express = require('express');
-const MongoClient = require('mongodb').MongoClient;
+const cors = require('cors');
+const mongoose = require('mongoose');
+// const graphql = require('graphql')
 const app = express();
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 // import ObjectId
-const ObjectId = require('mongodb').ObjectId;
-app.use(bodyParser.json({limit: '2mb'})); // support json encoded bodies
-app.use(bodyParser.urlencoded({limit: '2mb', extended: true, parameterLimit: 1000000})); // support encoded bodies
+const MongoDB = require('mongodb');
+const request = require('superagent');
+const cookieParser = require('cookie-parser');
+const conf = require('./conf.json');
+// Get database models
+const Repositories = require('./models/repositories.js');
+const Users = require('./models/users.js');
+
+const corsOptions = {
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+
+app.use(bodyParser.json({ limit: '2mb' })); // support json encoded bodies
+app.use(bodyParser.urlencoded({ limit: '2mb', extended: true, parameterLimit: 1000000 })); // support encoded bodies
 // serve files from the public directory
 app.use(express.static('public'));
+app.use(cookieParser());
 
-// connect to the db and start the express server
-var db;
+const mongoOpt = {
+  useNewUrlParser: true,
+  reconnectTries: conf.db.reconnectTries,
+  reconnectInterval: conf.db.reconnectInterval,
+};
+const mongoUrl = conf.db.url;
 
-// ***Replace the URL below with the URL for your database***
-const url =  'mongodb://localhost:27017/gitart';
-// E.g. for option 2) above this will be:
-// const url =  'mongodb://localhost:21017/databaseName';
+// MangoDB connection with retry
+const connectWithRetry = () => {
+  mongoose.connect(mongoUrl, mongoOpt)
+    .then(
+      () => {
+        console.log('Connected to MongoDB');
+      },
+      (err) => {
+        console.error('Failed to connect to MongoDB', err);
+        setTimeout(connectWithRetry, 5000);
+      }
+    );
+};
 
-MongoClient.connect(url, (err, database) => {
-  if(err) {
-    return console.log(err);
-  }
-  db = database;
-  // start the express web server listening on 8080
-  app.listen(8080, () => {
-    console.log('listening on 8080');
-  });
+// Connect to MongoDB
+connectWithRetry();
+
+// Server
+const server = app.listen(8000, () => {
+  console.log('Node server listening at http://%s:%s', server.address().address, server.address().port);
 });
 
 // serve the homepage
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile('./public/index.html');
 });
 
 app.post('/save', (req, res) => {
-    var id = req.body._id;
-    var canvas = req.body.canvas;
-    db.collection("repository").updateOne({"_id": ObjectId.createFromHexString(id)}, {$set: {"canvas": canvas}}, function(err, res) {
-        if (err) throw err;
-        console.log("1 document updated");
-    });
-})
+  Repositories.findById(req.body._id, (err, repo) => {
+    repo.canvas = req.body.canvas;
+    repo.save();
+    res.send('Ok');
+  });
+});
 
 app.post('/repo', (req, res) => {
-  //search database for repo with that name
-  console.log(req.body.name);
-  var repo = db.collection("repository").findOne({"name":req.body.name}).then(
-    function(data) {
+  // search database for repo with that name
+  Repositories.findOne({ name: req.body.name }).then(
+    (data) => {
+      if (data == null) {
+        const array = new Array(120);
+        for (let i = 0; i < 120; i++) {
+          array[i] = new Array(160);
+          array[i].fill('#fff');
+        }
+
+        const newRepo = new Repositories({
+          _id: MongoDB.ObjectId(),
+          name: req.body.name,
+          canvas: array,
+        });
+
+        newRepo.save((err, results) => {
+          console.log(results._id);
+        });
+        data = newRepo;
+      }
       res.send(data);
     }
   );
-  
-})
+});
+
+// User authentication
+app.get('/callback', (req, res) => {
+  const code = req.query.code;
+
+  request
+    .post('https://github.com/login/oauth/access_token')
+    .send({
+      client_id: '4100c6839f33b3b4f29c',
+      client_secret: 'd4e15a1fe2e5a69ff03fc2b8f728fad75640dbc6',
+      code: `${code}`
+    })
+    .then((result) => {
+      // get username with access token
+
+      res.cookie('client', result.body.access_token);
+      res.redirect('http://localhost:8000/');
+    });
+});

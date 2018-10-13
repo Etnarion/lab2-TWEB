@@ -1,0 +1,12 @@
+{
+  "db": {
+    "port": "27017",
+    "host": "mongodb",
+    "name": "gitart",
+    "usr": "dev",
+    "pwd": "dev",
+    "url": "mongodb://localhost:27017/gitart",
+    "reconnectTries": 10,
+    "reconnectInterval": 500
+  }
+}

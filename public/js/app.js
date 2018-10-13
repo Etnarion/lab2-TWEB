@@ -1,104 +1,101 @@
-
-var grid = require('pixel-grid');
-var position = require('mouse-position')
+const grid = require('pixel-grid');
+const position = require('mouse-position');
 const request = require('superagent');
-var array;
-var id;
-var colors = new Array(4);
-colors = [
-  ['#0061ff', '#01af4d', '#fffa00', '#d10092', '#d2a30', '#d1af92', '#26af0', '#ffaa32', '#4f4a00', '#d1f292', '#df6200', '#d154092']
-]
+const ColorPicker = require('a-color-picker');
+
+let array;
+let id;
 
 const size = 4.8;
 const padding = 0.2;
 const pixelOffset = size + padding;
 
-var pixels;
+let pixels;
 
-var colorPicker = grid(colors, {
-  size: 40,
-  padding: 1
-})
-
-var row, column, color
-var colorPick = '#fff'
-
-colorPicker.canvas.onclick = function(event) {
-  row = Math.floor(mouseColor[1] / 41)
-  column = Math.floor(mouseColor[0] / 41)
-  colorPick = colors[row][column]
-}
-
-request
-  .get('https://api.github.com/users/Etnarion/repos')
-  .then(res => {
-    res.body.forEach((data) => {
-      var div = document.createElement("div");
-      var name = data.name;
-      div.innerHTML = name;
-      document.getElementById("menuLeft").appendChild(div);
-      div.onclick = function(event){
-        $.ajax({
-          type: "POST",
-          url: '/repo',
-          data: JSON.stringify({name: name}),
-          contentType: 'application/json',
-          success: function(res) {
-            console.log(res);
-            showRepoCanvas(res);
-          }
-        })
-      }
-    });
-  });
+let row;
+let column;
+let color;
+let colorPick = '#fff';
 
 function showRepoCanvas(repo) {
-  //clears current grid
-  var gridArea = document.getElementById("gridArea");
+  // clears current grid
+  const gridArea = document.getElementById('gridArea');
   while (gridArea.firstChild) {
     gridArea.removeChild(gridArea.firstChild);
   }
 
-  //set array and id
+  const gridDiv = document.createElement('div');
+  const colorsDiv = document.createElement('div');
+  const gridCanvas = document.createElement('div');
+  const btnSave = document.createElement('button');
+
+  btnSave.style.backgroundColor = '#e7e7e7';
+
+  // set array and id
   id = repo._id;
   array = repo.canvas;
 
   pixels = grid(array, {
-    size: size,
-    padding: padding
-  })
+    size,
+    padding,
+    background: '#d8d8d8',
+  });
 
-  var mouseGrid = position(pixels.canvas)
+  const mouseGrid = position(pixels.canvas);
 
-  pixels.canvas.onclick = function(event){
-    row = Math.floor(mouseGrid[1] / pixelOffset)
-    column = Math.floor(mouseGrid[0] / pixelOffset)
-    color = colorPick
-    array[row][column] = color
-    pixels.update(array)
+  pixels.canvas.onclick = () => {
+    row = Math.floor(mouseGrid[1] / pixelOffset);
+    column = Math.floor(mouseGrid[0] / pixelOffset);
+    color = colorPick;
+    array[row][column] = color;
+    pixels.update(array);
+    btnSave.innerHTML = 'Save';
+    btnSave.style.backgroundColor = '#e7e7e7';
   };
 
-  mouseColor = position(colorPicker.canvas)
+  btnSave.innerHTML = 'Save';
+  btnSave.onclick = () => {
+    request
+      .post('/save')
+      .send({ _id: id, canvas: array })
+      .type('application/json')
+      .end((err, res) => {
+        if (res.ok) {
+          btnSave.innerHTML = 'Saved';
+          btnSave.style.backgroundColor = 'green';
+        }
+      });
+  };
 
-  var gridCanvas = document.createElement("div");
-  var colorPickerDom = document.createElement("div");
+  gridDiv.appendChild(gridCanvas);
+  gridArea.appendChild(gridDiv);
+  gridDiv.appendChild(btnSave);
+  gridArea.appendChild(colorsDiv);
   gridCanvas.appendChild(pixels.canvas);
-  colorPickerDom.appendChild(colorPicker.canvas);
 
-  var btnSave = document.createElement("button");
-  btnSave.innerHTML = "Save";
-  btnSave.onclick = function(event) {
-    $.ajax({
-      type: "POST",
-      url: '/save',
-      data: JSON.stringify({ _id: id, canvas: array }),
-      contentType: 'application/json',
-    })
-  }
-
-  gridArea.appendChild(gridCanvas);
-  gridArea.appendChild(colorPickerDom);
-  gridArea.appendChild(btnSave);
-
+  ColorPicker.createPicker(colorsDiv)
+    .onchange = (picker) => {
+      colorPick = picker.color;
+    };
 }
-module.exports = function (n) { return n * 111 }
+request
+  .get('https://api.github.com/users/Etnarion/repos')
+  .then((res) => {
+    res.body.forEach((data) => {
+      const div = document.createElement('div');
+      const name = data.name;
+      div.innerHTML = data.name;
+      document.getElementById('menuLeft').appendChild(div);
+      div.onclick = () => {
+        request
+          .post('/repo')
+          .send({ name })
+          .type('application/json')
+          .end((error, result) => {
+            showRepoCanvas(result.body);
+          });
+      };
+    });
+  });
+
+module.exports = n => n * 111;
