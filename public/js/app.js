@@ -17,6 +17,20 @@ let column;
 let color;
 let colorPick = '#fff';
 
+const loginLink = document.getElementById('loginLink');
+
+if (document.cookie) {
+  loginLink.setAttribute('href', '/disconnect');
+  loginLink.innerHTML = 'Log out';
+  request
+    .get('/connect')
+    .query({ cookie: document.cookie.substring(7, document.cookie.length) })
+    .end();
+} else {
+  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c');
+  loginLink.innerHTML = 'Log in';
+}
+
 function showRepoCanvas(repo) {
   // clears current grid
   const gridArea = document.getElementById('gridArea');
@@ -67,6 +81,9 @@ function showRepoCanvas(repo) {
       });
   };
 
+  gridCanvas.style.fontSize = '3em';
+  gridCanvas.innerHTML = repo.name;
+
   gridDiv.appendChild(gridCanvas);
   gridArea.appendChild(gridDiv);
   gridDiv.appendChild(btnSave);
@@ -78,14 +95,24 @@ function showRepoCanvas(repo) {
       colorPick = picker.color;
     };
 }
-request
+
+function cleanElement(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+  element.style.visibility = 'hidden';
+}
+
+const menuLeft = document.getElementById('menuLeft');
+
+/* request
   .get('https://api.github.com/users/Etnarion/repos')
   .then((res) => {
     res.body.forEach((data) => {
       const div = document.createElement('div');
       const name = data.name;
       div.innerHTML = data.name;
-      document.getElementById('menuLeft').appendChild(div);
+      menuLeft.appendChild(div);
       div.onclick = () => {
         request
           .post('/repo')
@@ -97,5 +124,84 @@ request
       };
     });
   });
+*/
+
+function changePixels(value) {
+  document.getElementById('pixels').innerHTML = `Pixels: ${value}`;
+}
+
+function searchPublicRepos(query) {
+  request
+    .get(`https://api.github.com/search/repositories?q=${query}`)
+    .then((res) => {
+      const publicRepos = res.body.items;
+      cleanElement(menuLeft);
+      menuLeft.style.visibility = 'visible';
+      publicRepos.forEach((data) => {
+        const div = document.createElement('div');
+        const name = data.name;
+        div.innerHTML = name;
+        menuLeft.appendChild(div);
+        div.onclick = () => {
+          request
+            .post('/repo')
+            .send({ data })
+            .type('application/json')
+            .then((result) => {
+              cleanElement(menuLeft);
+              changePixels(result.body.value);
+              showRepoCanvas(result.body.repo);
+            });
+        };
+      });
+    });
+}
+
+// Triggers public repos search when pressing enter key
+const searchBar = document.getElementById('searchBar');
+searchBar.onkeypress = (event) => {
+  if (event.keyCode === 13) {
+    searchPublicRepos(searchBar.value);
+  }
+};
+
+searchBar.oninput = () => {
+  while (menuLeft.firstChild) {
+    menuLeft.removeChild(menuLeft.firstChild);
+  }
+  menuLeft.style.visibility = 'visible';
+  request
+    .get('/repos')
+    .query({ text: searchBar.value })
+    .then((res) => {
+      res.body.forEach((data) => {
+        const div = document.createElement('div');
+        const name = data.name;
+        div.innerHTML = name;
+        menuLeft.appendChild(div);
+        div.onclick = () => {
+          request
+            .post('/repo')
+            .send({ data })
+            .type('application/json')
+            .then((result) => {
+              cleanElement(menuLeft);
+              changePixels(result.body.value);
+              showRepoCanvas(result.body.repo);
+            });
+        };
+      });
+      const divMore = document.createElement('div');
+      divMore.innerHTML = 'Search public repositories...';
+      divMore.style.backgroundColor = '#cecdcd';
+      menuLeft.appendChild(divMore);
+      divMore.onclick = () => {
+        searchPublicRepos(searchBar.value);
+      };
+    });
+  if (searchBar.value === '') {
+    cleanElement(menuLeft);
+  }
+};
 
 module.exports = n => n * 111;

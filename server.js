@@ -55,9 +55,34 @@ const server = app.listen(8000, () => {
   console.log('Node server listening at http://%s:%s', server.address().address, server.address().port);
 });
 
+let authUser;
+
 // serve the homepage
 app.get('/', (req, res) => {
   res.sendFile('./public/index.html');
+});
+
+function getAuthUser(login) {
+  Users.findOne({ gitId: login })
+    .then((user) => {
+      if (user == null) {
+        authUser = new Users({
+          _id: MongoDB.ObjectId(),
+          gitId: login,
+        });
+        authUser.save();
+      }
+      authUser = user;
+    });
+}
+
+app.get('/connect', (req) => {
+  const accessToken = req.query.cookie;
+  request
+    .get(`https://api.github.com/user?access_token=${accessToken}`)
+    .then((user) => {
+      getAuthUser(user.body.login);
+    });
 });
 
 app.post('/save', (req, res) => {
@@ -70,29 +95,78 @@ app.post('/save', (req, res) => {
 
 app.post('/repo', (req, res) => {
   // search database for repo with that name
-  Repositories.findOne({ name: req.body.name }).then(
-    (data) => {
-      if (data == null) {
-        const array = new Array(120);
-        for (let i = 0; i < 120; i++) {
-          array[i] = new Array(160);
-          array[i].fill('#fff');
+  Repositories.findOne({ name: req.body.data.name })
+    .then(
+      (data) => {
+        if (data == null) {
+          const array = new Array(120);
+          for (let i = 0; i < 120; i++) {
+            array[i] = new Array(160);
+            array[i].fill('#fff');
+          }
+
+          const newRepo = new Repositories({
+            _id: MongoDB.ObjectId(),
+            name: req.body.data.name,
+            owner: req.body.data.owner.login,
+            canvas: array,
+          });
+
+          // Insert user in repositories collection
+          // with 0 pixel
+          const today = new Date();
+          const newUser = {
+            user: authUser._id,
+            lastCommit: today.toISOString(),
+            pixels: 0,
+          };
+          newRepo.users.push(newUser);
+
+          newRepo.save();
+
+          res.send({ value: 0, repo: newRepo });
+        } else {
+          let totalValue = 0;
+          const today = new Date();
+          let lastCommit = today.toISOString();
+          data.users.forEach((user) => {
+            if (user.user.toString() === authUser._id.toString()) {
+              lastCommit = user.lastCommit;
+              totalValue = user.pixels;
+            }
+          });
+          request
+            .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${authUser.gitId}&since=${lastCommit}`)
+            .then((result) => {
+              let counter = 0;
+              result.body.forEach((commit) => {
+                counter++;
+                request
+                  .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits/${commit.sha}`)
+                  .then((singleCommit) => {
+                    totalValue += (singleCommit.body.stats.total / 20) + 1;
+                    if (counter === result.body.length) {
+                      res.send({ value: totalValue, repo: data });
+                    }
+                  });
+              });
+            });
         }
-
-        const newRepo = new Repositories({
-          _id: MongoDB.ObjectId(),
-          name: req.body.name,
-          canvas: array,
-        });
-
-        newRepo.save((err, results) => {
-          console.log(results._id);
-        });
-        data = newRepo;
       }
+    );
+});
+
+// recent repositories search
+app.get('/repos', (req, res) => {
+  Repositories.find({ name: { $regex: req.query.text, $options: 'i' } })
+    .then((data) => {
       res.send(data);
-    }
-  );
+    });
+});
+
+app.get('/disconnect', (req, res) => {
+  res.clearCookie('client');
+  res.redirect('http://localhost:8000/');
 });
 
 // User authentication
@@ -108,7 +182,11 @@ app.get('/callback', (req, res) => {
     })
     .then((result) => {
       // get username with access token
-
+      request
+        .get(`https://api.github.com/user?access_token=${result.body.access_token}`)
+        .then((user) => {
+          getAuthUser(user.body.login);
+        });
       res.cookie('client', result.body.access_token);
       res.redirect('http://localhost:8000/');
     });

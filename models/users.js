@@ -4,8 +4,7 @@ const Schema = mongoose.Schema
 
 const users = new Schema({
   _id: Schema.Types.ObjectId,
-  gitId: String,
-  pixels: Number
+  gitId: String
 }, {collection: 'user'})
 
 module.exports = mongoose.model('user', users)

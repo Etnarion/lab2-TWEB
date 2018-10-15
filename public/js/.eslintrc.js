@@ -7,4 +7,7 @@ module.exports = {
         "comma-dangle": [0],
         "prefer-destructuring": [0]
       },
+    "globals": {
+        "document": true
+      },
 };
