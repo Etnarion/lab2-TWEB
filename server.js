@@ -76,12 +76,13 @@ function getAuthUser(login) {
     });
 }
 
-app.get('/connect', (req) => {
+app.get('/connect', (req, res) => {
   const accessToken = req.query.cookie;
   request
     .get(`https://api.github.com/user?access_token=${accessToken}`)
     .then((user) => {
       getAuthUser(user.body.login);
+      res.send(user.body.login);
     });
 });
 
@@ -138,18 +139,19 @@ app.post('/repo', (req, res) => {
           request
             .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${authUser.gitId}&since=${lastCommit}`)
             .then((result) => {
-              let counter = 0;
+              const promises = [];
               result.body.forEach((commit) => {
-                counter++;
-                request
-                  .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits/${commit.sha}`)
-                  .then((singleCommit) => {
-                    totalValue += (singleCommit.body.stats.total / 20) + 1;
-                    if (counter === result.body.length) {
-                      res.send({ value: totalValue, repo: data });
-                    }
-                  });
+                promises.push(
+                  request.get(`https://api.github.com/repos/${data.owner}/${data.name}/commits/${commit.sha}`)
+                );
               });
+              Promise.all(promises)
+                .then((commits) => {
+                  commits.forEach((commit) => {
+                    totalValue += (commit.body.stats.total / 10) + 1;
+                  });
+                  res.send({ value: totalValue, repo: data });
+                });
             });
         }
       }
@@ -186,6 +188,7 @@ app.get('/callback', (req, res) => {
         .get(`https://api.github.com/user?access_token=${result.body.access_token}`)
         .then((user) => {
           getAuthUser(user.body.login);
+          res.cookie('login', authUser);
         });
       res.cookie('client', result.body.access_token);
       res.redirect('http://localhost:8000/');

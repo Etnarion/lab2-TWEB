@@ -12945,6 +12945,10 @@ function showRepoCanvas(repo) {
   const mouseGrid = position(pixels.canvas);
 
   pixels.canvas.onclick = () => {
+    request
+      .get('/pixel')
+      .query({ repository: repo, user: userLogin })
+      .end();
     row = Math.floor(mouseGrid[1] / pixelOffset);
     column = Math.floor(mouseGrid[0] / pixelOffset);
     color = colorPick;
@@ -12992,27 +12996,6 @@ function cleanElement(element) {
 
 const menuLeft = document.getElementById('menuLeft');
 
-/* request
-  .get('https://api.github.com/users/Etnarion/repos')
-  .then((res) => {
-    res.body.forEach((data) => {
-      const div = document.createElement('div');
-      const name = data.name;
-      div.innerHTML = data.name;
-      menuLeft.appendChild(div);
-      div.onclick = () => {
-        request
-          .post('/repo')
-          .send({ name })
-          .type('application/json')
-          .end((error, result) => {
-            showRepoCanvas(result.body);
-          });
-      };
-    });
-  });
-*/
-
 function changePixels(value) {
   document.getElementById('pixels').innerHTML = `Pixels: ${value}`;
 }
@@ -13035,7 +13018,6 @@ function searchPublicRepos(query) {
             .send({ data })
             .type('application/json')
             .then((result) => {
-              console.log(result.body.value);
               cleanElement(menuLeft);
               changePixels(result.body.value);
               showRepoCanvas(result.body.repo);
