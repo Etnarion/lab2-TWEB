@@ -12967,15 +12967,17 @@ function showRepoCanvas(repo) {
   const mouseGrid = position(pixels.canvas);
 
   pixels.canvas.onclick = () => {
-    nbPixels -= 1;
-    changePixels(nbPixels);
-    row = Math.floor(mouseGrid[1] / pixelOffset);
-    column = Math.floor(mouseGrid[0] / pixelOffset);
-    color = colorPick;
-    array[row][column] = color;
-    pixels.update(array);
-    btnSave.innerHTML = 'Save';
-    btnSave.style.backgroundColor = '#e7e7e7';
+    if (nbPixels > 0) {
+      nbPixels -= 1;
+      changePixels(nbPixels);
+      row = Math.floor(mouseGrid[1] / pixelOffset);
+      column = Math.floor(mouseGrid[0] / pixelOffset);
+      color = colorPick;
+      array[row][column] = color;
+      pixels.update(array);
+      btnSave.innerHTML = 'Save';
+      btnSave.style.backgroundColor = '#e7e7e7';
+    }
   };
 
   btnSave.innerHTML = 'Save';
@@ -12985,7 +12987,7 @@ function showRepoCanvas(repo) {
       .send({
         _id: id,
         canvas: array,
-        login: getCookie('login'),
+        user: getCookie('user'),
         pixels: nbPixels
       })
       .type('application/json')
@@ -13023,7 +13025,7 @@ const menuLeft = document.getElementById('menuLeft');
 
 function searchPublicRepos(query) {
   request
-    .get(`https://api.github.com/search/repositories?q=${query}`)
+    .get(`https://api.github.com/search/repositories?q=${query}&access_token=${getCookie('access_token')}`)
     .then((res) => {
       const publicRepos = res.body.items;
       cleanElement(menuLeft);
@@ -13036,7 +13038,7 @@ function searchPublicRepos(query) {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ repos: data, user: username })
+            .send({ repos: data, userId: getCookie('user'), login: getCookie('login') })
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
@@ -13074,7 +13076,7 @@ searchBar.oninput = () => {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ repos: data, user: username })
+            .send({ repos: data, userId: getCookie('user'), login: getCookie('login') })
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
