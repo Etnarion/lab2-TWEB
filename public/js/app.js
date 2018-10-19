@@ -80,15 +80,17 @@ function showRepoCanvas(repo) {
   const mouseGrid = position(pixels.canvas);
 
   pixels.canvas.onclick = () => {
-    nbPixels -= 1;
-    changePixels(nbPixels);
-    row = Math.floor(mouseGrid[1] / pixelOffset);
-    column = Math.floor(mouseGrid[0] / pixelOffset);
-    color = colorPick;
-    array[row][column] = color;
-    pixels.update(array);
-    btnSave.innerHTML = 'Save';
-    btnSave.style.backgroundColor = '#e7e7e7';
+    if (nbPixels > 0) {
+      nbPixels -= 1;
+      changePixels(nbPixels);
+      row = Math.floor(mouseGrid[1] / pixelOffset);
+      column = Math.floor(mouseGrid[0] / pixelOffset);
+      color = colorPick;
+      array[row][column] = color;
+      pixels.update(array);
+      btnSave.innerHTML = 'Save';
+      btnSave.style.backgroundColor = '#e7e7e7';
+    }
   };
 
   btnSave.innerHTML = 'Save';

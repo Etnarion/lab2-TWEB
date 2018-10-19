@@ -156,7 +156,7 @@ app.get('/disconnect', (req, res) => {
   res.clearCookie('access_token');
   res.clearCookie('user');
   res.clearCookie('login');
-  res.redirect('http://localhost:8000/');
+  res.redirect('/');
 });
 
 // User authentication
