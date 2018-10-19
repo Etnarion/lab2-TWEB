@@ -13,6 +13,7 @@ const conf = require('./conf.json');
 // Get database models
 const Repositories = require('./models/repositories.js');
 const Users = require('./models/users.js');
+const RepoUsers = require('./models/repousers.js');
 
 const corsOptions = {
   optionsSuccessStatus: 200,
@@ -55,8 +56,6 @@ const server = app.listen(8000, () => {
   console.log('Node server listening at http://%s:%s', server.address().address, server.address().port);
 });
 
-let authUser;
-
 // serve the homepage
 app.get('/', (req, res) => {
   res.sendFile('./public/index.html');
@@ -66,37 +65,33 @@ function getAuthUser(login) {
   Users.findOne({ gitId: login })
     .then((user) => {
       if (user == null) {
-        authUser = new Users({
+        const authUser = new Users({
           _id: MongoDB.ObjectId(),
           gitId: login,
         });
         authUser.save();
+        return authUser;
       }
-      authUser = user;
+      return user;
     });
 }
-
-app.get('/connect', (req, res) => {
-  const accessToken = req.query.cookie;
-  request
-    .get(`https://api.github.com/user?access_token=${accessToken}`)
-    .then((user) => {
-      getAuthUser(user.body.login);
-      res.send(user.body.login);
-    });
-});
 
 app.post('/save', (req, res) => {
   Repositories.findById(req.body._id, (err, repo) => {
     repo.canvas = req.body.canvas;
-    repo.save();
-    res.send('Ok');
+    RepoUsers.findOne({ user: req.body.login })
+      .then((foundUser) => {
+        foundUser.pixels = req.body.pixels;
+        foundUser.save();
+        repo.save();
+        res.send('Ok');
+      });
   });
 });
 
 app.post('/repo', (req, res) => {
   // search database for repo with that name
-  Repositories.findOne({ name: req.body.data.name })
+  Repositories.findOne({ name: req.body.repos.name })
     .then(
       (data) => {
         if (data == null) {
@@ -108,8 +103,8 @@ app.post('/repo', (req, res) => {
 
           const newRepo = new Repositories({
             _id: MongoDB.ObjectId(),
-            name: req.body.data.name,
-            owner: req.body.data.owner.login,
+            name: req.body.repos.name,
+            owner: req.body.repos.owner.login,
             canvas: array,
           });
 
@@ -117,8 +112,8 @@ app.post('/repo', (req, res) => {
           // with 0 pixel
           const today = new Date();
           const newUser = {
-            user: authUser._id,
-            lastCommit: today.toISOString(),
+            user: req.body.user,
+            lastCommit: today.toISOString().replace(/\s/g, ''),
             pixels: 0,
           };
           newRepo.users.push(newUser);
@@ -129,15 +124,15 @@ app.post('/repo', (req, res) => {
         } else {
           let totalValue = 0;
           const today = new Date();
-          let lastCommit = today.toISOString();
+          let lastCommit = today.toISOString().replace(/\s/g, '');
           data.users.forEach((user) => {
-            if (user.user.toString() === authUser._id.toString()) {
+            if (user.user === req.body.user) {
               lastCommit = user.lastCommit;
               totalValue = user.pixels;
             }
           });
           request
-            .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${authUser.gitId}&since=${lastCommit}`)
+            .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${req.body.user}&since=${lastCommit}`)
             .then((result) => {
               const promises = [];
               result.body.forEach((commit) => {
@@ -148,8 +143,19 @@ app.post('/repo', (req, res) => {
               Promise.all(promises)
                 .then((commits) => {
                   commits.forEach((commit) => {
-                    totalValue += (commit.body.stats.total / 10) + 1;
+                    totalValue += Math.round((commit.body.stats.total / 15) + 1);
                   });
+                  if (totalValue > 0) {
+                    Repositories.findById(data._id, (err, repo) => {
+                      repo.users.forEach((user) => {
+                        if (user.user === req.body.user) {
+                          user.lastCommit = today.toISOString().replace(/\s/g, '');
+                          user.pixels = totalValue;
+                        }
+                      });
+                      repo.save();
+                    });
+                  }
                   res.send({ value: totalValue, repo: data });
                 });
             });
@@ -167,7 +173,9 @@ app.get('/repos', (req, res) => {
 });
 
 app.get('/disconnect', (req, res) => {
-  res.clearCookie('client');
+  res.clearCookie('access_token');
+  res.clearCookie('user');
+  res.clearCookie('login');
   res.redirect('http://localhost:8000/');
 });
 
@@ -187,10 +195,14 @@ app.get('/callback', (req, res) => {
       request
         .get(`https://api.github.com/user?access_token=${result.body.access_token}`)
         .then((user) => {
-          getAuthUser(user.body.login);
-          res.cookie('login', authUser);
+          const tmpUser = getAuthUser(user.body.login);
+          res.cookie('user', tmpUser._id);
+          res.cookie('login', tmpUser.gitId);
+          res.cookie('access_token', result.body.access_token);
+          res.redirect('http://localhost:8000/');
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      res.cookie('client', result.body.access_token);
-      res.redirect('http://localhost:8000/');
     });
 });

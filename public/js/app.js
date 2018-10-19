@@ -18,17 +18,39 @@ let color;
 let colorPick = '#fff';
 
 const loginLink = document.getElementById('loginLink');
+const pixelsDiv = document.getElementById('pixels');
+
+let nbPixels;
+
+let username;
+
+function getCookie(cname) {
+  const name = `${cname}=`;
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return '';
+}
 
 if (document.cookie) {
   loginLink.setAttribute('href', '/disconnect');
   loginLink.innerHTML = 'Log out';
-  request
-    .get('/connect')
-    .query({ cookie: document.cookie.substring(7, document.cookie.length) })
-    .end();
+  username = getCookie('login');
 } else {
   loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c');
   loginLink.innerHTML = 'Log in';
+}
+
+function changePixels(value) {
+  pixelsDiv.innerHTML = `Pixels: ${value}`;
 }
 
 function showRepoCanvas(repo) {
@@ -58,10 +80,8 @@ function showRepoCanvas(repo) {
   const mouseGrid = position(pixels.canvas);
 
   pixels.canvas.onclick = () => {
-    request
-      .get('/pixel')
-      .query({ repository: repo, user: userLogin })
-      .end();
+    nbPixels -= 1;
+    changePixels(nbPixels);
     row = Math.floor(mouseGrid[1] / pixelOffset);
     column = Math.floor(mouseGrid[0] / pixelOffset);
     color = colorPick;
@@ -75,7 +95,12 @@ function showRepoCanvas(repo) {
   btnSave.onclick = () => {
     request
       .post('/save')
-      .send({ _id: id, canvas: array })
+      .send({
+        _id: id,
+        canvas: array,
+        user: getCookie('user'),
+        pixels: nbPixels
+      })
       .type('application/json')
       .end((err, res) => {
         if (res.ok) {
@@ -109,10 +134,6 @@ function cleanElement(element) {
 
 const menuLeft = document.getElementById('menuLeft');
 
-function changePixels(value) {
-  document.getElementById('pixels').innerHTML = `Pixels: ${value}`;
-}
-
 function searchPublicRepos(query) {
   request
     .get(`https://api.github.com/search/repositories?q=${query}`)
@@ -128,11 +149,12 @@ function searchPublicRepos(query) {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ data })
+            .send({ repos: data, user: username })
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
-              changePixels(result.body.value);
+              nbPixels = result.body.value;
+              changePixels(nbPixels);
               showRepoCanvas(result.body.repo);
             });
         };
@@ -165,11 +187,12 @@ searchBar.oninput = () => {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ data })
+            .send({ repos: data, user: username })
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
-              changePixels(result.body.value);
+              nbPixels = result.body.value;
+              changePixels(nbPixels);
               showRepoCanvas(result.body.repo);
             });
         };
