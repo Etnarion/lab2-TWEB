@@ -33,7 +33,6 @@ const mongoOpt = {
   reconnectInterval: conf.db.reconnectInterval,
 };
 const mongoUrl = process.env.CONFIG;
-console.log(mongoUrl);
 
 // MangoDB connection with retry
 const connectWithRetry = () => {
