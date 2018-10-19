@@ -176,8 +176,8 @@ app.get('/callback', (req, res) => {
   request
     .post('https://github.com/login/oauth/access_token')
     .send({
-      client_id: '6ebffe27fc6d66fb4546',
-      client_secret: '8e81ac372125aaa83f1f0dd5636a3b38975031c2',
+      client_id: '4100c6839f33b3b4f29c',
+      client_secret: 'd4e15a1fe2e5a69ff03fc2b8f728fad75640dbc6',
       code: `${code}`
     })
     .then((result) => {

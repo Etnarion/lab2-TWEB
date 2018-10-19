@@ -45,7 +45,7 @@ if (document.cookie) {
   loginLink.innerHTML = 'Log out';
   username = getCookie('login');
 } else {
-  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=6ebffe27fc6d66fb4546');
+  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c');
   loginLink.innerHTML = 'Log in';
 }
 
