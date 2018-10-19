@@ -128,7 +128,6 @@ function showRepoCanvas(repo) {
 }
 
 function cleanElement(element) {
-  console.log(document.cookie);
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
