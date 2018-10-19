@@ -11,7 +11,3 @@ const repousers = new Schema({
 
 module.exports = mongoose.model('repousers', repousers)
 
-
-[
-        
-    ],
