@@ -32,7 +32,7 @@ const mongoOpt = {
   reconnectTries: conf.db.reconnectTries,
   reconnectInterval: conf.db.reconnectInterval,
 };
-const mongoUrl = conf.db.url;
+const mongoUrl = process.env.CONFIG;
 
 // MangoDB connection with retry
 const connectWithRetry = () => {
@@ -52,7 +52,7 @@ const connectWithRetry = () => {
 connectWithRetry();
 
 // Server
-const server = app.listen(8000, () => {
+const server = app.listen(process.env.PORT || 8000, () => {
   console.log('Node server listening at http://%s:%s', server.address().address, server.address().port);
 });
 
