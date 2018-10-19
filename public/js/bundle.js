@@ -12912,6 +12912,7 @@ let nbPixels;
 let username;
 
 function getCookie(cname) {
+  console.log(document.cookie);
   const name = `${cname}=`;
   const decodedCookie = decodeURIComponent(document.cookie);
   const ca = decodedCookie.split(';');
@@ -12921,6 +12922,7 @@ function getCookie(cname) {
       c = c.substring(1);
     }
     if (c.indexOf(name) === 0) {
+      console.log(c.substring(name.length, c.length));
       return c.substring(name.length, c.length);
     }
   }
@@ -12932,7 +12934,7 @@ if (document.cookie) {
   loginLink.innerHTML = 'Log out';
   username = getCookie('login');
 } else {
-  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c');
+  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=6ebffe27fc6d66fb4546');
   loginLink.innerHTML = 'Log in';
 }
 
