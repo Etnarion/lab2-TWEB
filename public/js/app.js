@@ -136,7 +136,7 @@ const menuLeft = document.getElementById('menuLeft');
 
 function searchPublicRepos(query) {
   request
-    .get(`https://api.github.com/search/repositories?q=${query}`)
+    .get(`https://api.github.com/search/repositories?q=${query}&access_token=${getCookie('access_token')}`)
     .then((res) => {
       const publicRepos = res.body.items;
       cleanElement(menuLeft);
@@ -149,7 +149,7 @@ function searchPublicRepos(query) {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ repos: data, user: username })
+            .send({ repos: data, userId: getCookie('user'), login: getCookie('login') })
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
@@ -187,7 +187,7 @@ searchBar.oninput = () => {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ repos: data, user: username })
+            .send({ repos: data, userId: getCookie('user'), login: getCookie('login') })
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
