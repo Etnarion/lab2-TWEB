@@ -115,29 +115,39 @@ app.post('/repo', (req, res) => {
               if (repouser) {
                 lastCommit = repouser.lastCommit;
                 totalValue = repouser.pixels;
-              }
-              request
-                .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${req.body.login}&since=${lastCommit}`)
-                .then((result) => {
-                  const promises = [];
-                  result.body.forEach((commit) => {
-                    promises.push(
-                      request.get(`https://api.github.com/repos/${data.owner}/${data.name}/commits/${commit.sha}`)
-                    );
-                  });
-                  Promise.all(promises)
-                    .then((commits) => {
-                      commits.forEach((commit) => {
-                        totalValue += Math.round((commit.body.stats.total / 15) + 1);
-                      });
-                      if (totalValue > 0) {
-                        repouser.lastCommit = today.toISOString().replace(/\s/g, '');
-                        repouser.pixels = totalValue;
-                        repouser.save();
-                      }
-                      res.send({ value: totalValue, repo: data });
+
+                request
+                  .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${req.body.login}&since=${lastCommit}`)
+                  .then((result) => {
+                    const promises = [];
+                    result.body.forEach((commit) => {
+                      promises.push(
+                        request.get(`https://api.github.com/repos/${data.owner}/${data.name}/commits/${commit.sha}`)
+                      );
                     });
+                    Promise.all(promises)
+                      .then((commits) => {
+                        commits.forEach((commit) => {
+                          totalValue += Math.round((commit.body.stats.total / 15) + 1);
+                        });
+                        if (totalValue > 0) {
+                          repouser.lastCommit = today.toISOString().replace(/\s/g, '');
+                          repouser.pixels = totalValue;
+                          repouser.save();
+                        }
+                        res.send({ value: totalValue, repo: data });
+                      });
+                  });
+              } else {
+                repouser = new RepoUsers({
+                  repo: data._id,
+                  user: req.body.userId,
+                  lastCommit,
+                  pixels: 0
                 });
+                repouser.save();
+                res.send({ value: totalValue, repo: data });
+              }
             });
         }
       }
