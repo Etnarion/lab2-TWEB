@@ -187,7 +187,7 @@ app.get('/callback', (req, res) => {
               res.cookie('user', authUser._id);
               res.cookie('login', authUser.gitId);
               res.cookie('access_token', result.body.access_token);
-              res.redirect('http://localhost:8000/');
+              res.redirect('/');
             });
         })
         .catch((err) => {
