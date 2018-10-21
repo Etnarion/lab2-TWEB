@@ -66,6 +66,8 @@ app.post('/save', (req, res) => {
     repo.canvas = req.body.canvas;
     RepoUsers.findOne({ user: req.body.user })
       .then((foundUser) => {
+        const today = new Date();
+        foundUser.lastCommit = today.toISOString().replace(/\s/g, '');
         foundUser.pixels = req.body.pixels;
         foundUser.save();
         repo.save();
