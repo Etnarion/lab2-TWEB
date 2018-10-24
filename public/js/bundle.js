@@ -984,6 +984,78 @@ Emitter.prototype.hasListeners = function(event){
 };
 
 },{}],5:[function(require,module,exports){
+/**
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing. The function also has a property 'clear' 
+ * that is a function which will clear the timer to prevent previously scheduled executions. 
+ *
+ * @source underscore.js
+ * @see http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
+ * @param {Function} function to wrap
+ * @param {Number} timeout in ms (`100`)
+ * @param {Boolean} whether to execute at the beginning (`false`)
+ * @api public
+ */
+function debounce(func, wait, immediate){
+  var timeout, args, context, timestamp, result;
+  if (null == wait) wait = 100;
+
+  function later() {
+    var last = Date.now() - timestamp;
+
+    if (last < wait && last >= 0) {
+      timeout = setTimeout(later, wait - last);
+    } else {
+      timeout = null;
+      if (!immediate) {
+        result = func.apply(context, args);
+        context = args = null;
+      }
+    }
+  };
+
+  var debounced = function(){
+    context = this;
+    args = arguments;
+    timestamp = Date.now();
+    var callNow = immediate && !timeout;
+    if (!timeout) timeout = setTimeout(later, wait);
+    if (callNow) {
+      result = func.apply(context, args);
+      context = args = null;
+    }
+
+    return result;
+  };
+
+  debounced.clear = function() {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+  
+  debounced.flush = function() {
+    if (timeout) {
+      result = func.apply(context, args);
+      context = args = null;
+      
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return debounced;
+};
+
+// Adds compatibility for ES modules
+debounce.debounce = debounce;
+
+module.exports = debounce;
+
+},{}],6:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1287,7 +1359,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = function flatten(list, depth) {
   depth = (typeof depth == 'number') ? depth : Infinity;
 
@@ -1312,7 +1384,7 @@ module.exports = function flatten(list, depth) {
   }
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 /**
  * isArray
@@ -1347,7 +1419,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -1370,7 +1442,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*!
  * is-number <https://github.com/jonschlinkert/is-number>
  *
@@ -1391,7 +1463,7 @@ module.exports = function isNumber(num) {
   return (n - n + 1) >= 0 && num !== '';
 };
 
-},{"kind-of":11}],10:[function(require,module,exports){
+},{"kind-of":12}],11:[function(require,module,exports){
 'use strict';
 
 var strValue = String.prototype.valueOf;
@@ -1413,7 +1485,7 @@ module.exports = function isString(value) {
 	return hasToStringTag ? tryStringObject(value) : toStr.call(value) === strClass;
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var isBuffer = require('is-buffer');
 var toString = Object.prototype.toString;
 
@@ -1531,7 +1603,7 @@ module.exports = function kindOf(val) {
   return 'object';
 };
 
-},{"is-buffer":8}],12:[function(require,module,exports){
+},{"is-buffer":9}],13:[function(require,module,exports){
 var Emitter = require('events/')
 
 module.exports = attach
@@ -1583,7 +1655,7 @@ function attach(element, listener) {
 
 }
 
-},{"events/":5}],13:[function(require,module,exports){
+},{"events/":6}],14:[function(require,module,exports){
 var convert = require('color-convert');
 
 module.exports = function (cstr) {
@@ -1668,7 +1740,7 @@ module.exports = function (cstr) {
     return res;
 };
 
-},{"color-convert":3}],14:[function(require,module,exports){
+},{"color-convert":3}],15:[function(require,module,exports){
 var parse = require('parse-color')
 var isnumber = require('is-number')
 var isstring = require('is-string')
@@ -1778,7 +1850,7 @@ Pixels.prototype.update = function (data) {
 
 module.exports = Pixels
 
-},{"./util/convert":15,"./util/layout":16,"is-array":7,"is-number":9,"is-string":10,"parse-color":13,"regl":49}],15:[function(require,module,exports){
+},{"./util/convert":16,"./util/layout":17,"is-array":8,"is-number":10,"is-string":11,"parse-color":14,"regl":50}],16:[function(require,module,exports){
 var flatten = require('flatten')
 var isarray = require('is-array')
 var isnumber = require('is-number')
@@ -1805,7 +1877,7 @@ function convert (data) {
 
 module.exports = convert
 
-},{"flatten":6,"is-array":7,"is-number":9,"is-string":10,"parse-color":13}],16:[function(require,module,exports){
+},{"flatten":7,"is-array":8,"is-number":10,"is-string":11,"parse-color":14}],17:[function(require,module,exports){
 function layout (rows, columns, padding, size, aspect) {
   var grid = []
 
@@ -1822,7 +1894,7 @@ function layout (rows, columns, padding, size, aspect) {
 
 module.exports = layout
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var GL_FLOAT = 5126
 
 function AttributeRecord () {
@@ -1861,7 +1933,7 @@ module.exports = function wrapAttributeState (
   }
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var check = require('./util/check')
 var isTypedArray = require('./util/is-typed-array')
 var isNDArrayLike = require('./util/is-ndarray')
@@ -2238,7 +2310,7 @@ module.exports = function wrapBufferState (gl, stats, config) {
   }
 }
 
-},{"./constants/arraytypes.json":19,"./constants/dtypes.json":20,"./constants/usage.json":22,"./util/check":36,"./util/is-ndarray":41,"./util/is-typed-array":42,"./util/pool":44,"./util/values":47}],19:[function(require,module,exports){
+},{"./constants/arraytypes.json":20,"./constants/dtypes.json":21,"./constants/usage.json":23,"./util/check":37,"./util/is-ndarray":42,"./util/is-typed-array":43,"./util/pool":45,"./util/values":48}],20:[function(require,module,exports){
 module.exports={
   "[object Int8Array]": 5120
 , "[object Int16Array]": 5122
@@ -2252,7 +2324,7 @@ module.exports={
 , "[object ArrayBuffer]": 5121
 }
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 module.exports={
   "int8": 5120
 , "int16": 5122
@@ -2264,7 +2336,7 @@ module.exports={
 , "float32": 5126
 }
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports={
   "points": 0,
   "point": 0,
@@ -2278,14 +2350,14 @@ module.exports={
   "triangle fan": 6
 }
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 module.exports={
   "static": 35044,
   "dynamic": 35048,
   "stream": 35040
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var check = require('./util/check')
 var createEnvironment = require('./util/codegen')
 var loop = require('./util/loop')
@@ -5629,7 +5701,7 @@ module.exports = function reglCore (
   }
 }
 
-},{"./constants/dtypes.json":20,"./constants/primitives.json":21,"./dynamic":24,"./util/check":36,"./util/codegen":38,"./util/is-array-like":40,"./util/is-ndarray":41,"./util/is-typed-array":42,"./util/loop":43}],24:[function(require,module,exports){
+},{"./constants/dtypes.json":21,"./constants/primitives.json":22,"./dynamic":25,"./util/check":37,"./util/codegen":39,"./util/is-array-like":41,"./util/is-ndarray":42,"./util/is-typed-array":43,"./util/loop":44}],25:[function(require,module,exports){
 var VARIABLE_COUNTER = 0
 
 var DYN_FUNC = 0
@@ -5707,7 +5779,7 @@ module.exports = {
   accessor: toAccessorString
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var check = require('./util/check')
 var isTypedArray = require('./util/is-typed-array')
 var isNDArrayLike = require('./util/is-ndarray')
@@ -5990,7 +6062,7 @@ module.exports = function wrapElementsState (gl, extensions, bufferState, stats)
   }
 }
 
-},{"./constants/primitives.json":21,"./constants/usage.json":22,"./util/check":36,"./util/is-ndarray":41,"./util/is-typed-array":42,"./util/values":47}],26:[function(require,module,exports){
+},{"./constants/primitives.json":22,"./constants/usage.json":23,"./util/check":37,"./util/is-ndarray":42,"./util/is-typed-array":43,"./util/values":48}],27:[function(require,module,exports){
 var check = require('./util/check')
 
 module.exports = function createExtensionCache (gl, config) {
@@ -6022,7 +6094,7 @@ module.exports = function createExtensionCache (gl, config) {
   }
 }
 
-},{"./util/check":36}],27:[function(require,module,exports){
+},{"./util/check":37}],28:[function(require,module,exports){
 var check = require('./util/check')
 var values = require('./util/values')
 var extend = require('./util/extend')
@@ -6904,7 +6976,7 @@ module.exports = function wrapFBOState (
   })
 }
 
-},{"./util/check":36,"./util/extend":39,"./util/values":47}],28:[function(require,module,exports){
+},{"./util/check":37,"./util/extend":40,"./util/values":48}],29:[function(require,module,exports){
 var GL_SUBPIXEL_BITS = 0x0D50
 var GL_RED_BITS = 0x0D52
 var GL_GREEN_BITS = 0x0D53
@@ -6998,7 +7070,7 @@ module.exports = function (gl, extensions) {
   }
 }
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var check = require('./util/check')
 var isTypedArray = require('./util/is-typed-array')
 
@@ -7112,7 +7184,7 @@ module.exports = function wrapReadPixels (
   return readPixels
 }
 
-},{"./util/check":36,"./util/is-typed-array":42}],30:[function(require,module,exports){
+},{"./util/check":37,"./util/is-typed-array":43}],31:[function(require,module,exports){
 var check = require('./util/check')
 var values = require('./util/values')
 
@@ -7344,7 +7416,7 @@ module.exports = function (gl, extensions, limits, stats, config) {
   }
 }
 
-},{"./util/check":36,"./util/values":47}],31:[function(require,module,exports){
+},{"./util/check":37,"./util/values":48}],32:[function(require,module,exports){
 var check = require('./util/check')
 var values = require('./util/values')
 
@@ -7555,7 +7627,7 @@ module.exports = function wrapShaderState (gl, stringStore, stats, config) {
   }
 }
 
-},{"./util/check":36,"./util/values":47}],32:[function(require,module,exports){
+},{"./util/check":37,"./util/values":48}],33:[function(require,module,exports){
 
 module.exports = function stats () {
   return {
@@ -7571,7 +7643,7 @@ module.exports = function stats () {
   }
 }
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 module.exports = function createStringStore () {
   var stringIds = {'': 0}
   var stringValues = ['']
@@ -7592,7 +7664,7 @@ module.exports = function createStringStore () {
   }
 }
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var check = require('./util/check')
 var extend = require('./util/extend')
 var values = require('./util/values')
@@ -9161,7 +9233,7 @@ module.exports = function createTextureSet (
   }
 }
 
-},{"./constants/arraytypes.json":19,"./util/check":36,"./util/extend":39,"./util/is-array-like":40,"./util/is-ndarray":41,"./util/is-typed-array":42,"./util/pool":44,"./util/to-half-float":46,"./util/values":47}],35:[function(require,module,exports){
+},{"./constants/arraytypes.json":20,"./util/check":37,"./util/extend":40,"./util/is-array-like":41,"./util/is-ndarray":42,"./util/is-typed-array":43,"./util/pool":45,"./util/to-half-float":47,"./util/values":48}],36:[function(require,module,exports){
 var GL_QUERY_RESULT_EXT = 0x8866
 var GL_QUERY_RESULT_AVAILABLE_EXT = 0x8867
 var GL_TIME_ELAPSED_EXT = 0x88BF
@@ -9297,7 +9369,7 @@ module.exports = function (gl, extensions) {
   }
 }
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 // Error checking and parameter validation.
 //
 // Statements for the form `check.someProcedure(...)` get removed by
@@ -9936,14 +10008,14 @@ module.exports = extend(check, {
   textureCube: checkTextureCube
 })
 
-},{"./extend":39,"./is-typed-array":42}],37:[function(require,module,exports){
+},{"./extend":40,"./is-typed-array":43}],38:[function(require,module,exports){
 /* globals performance */
 module.exports =
   (typeof performance !== 'undefined' && performance.now)
   ? function () { return performance.now() }
   : function () { return +(new Date()) }
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var extend = require('./extend')
 
 function slice (x) {
@@ -10127,7 +10199,7 @@ module.exports = function createEnvironment () {
   }
 }
 
-},{"./extend":39}],39:[function(require,module,exports){
+},{"./extend":40}],40:[function(require,module,exports){
 module.exports = function (base, opts) {
   var keys = Object.keys(opts)
   for (var i = 0; i < keys.length; ++i) {
@@ -10136,13 +10208,13 @@ module.exports = function (base, opts) {
   return base
 }
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var isTypedArray = require('./is-typed-array')
 module.exports = function isArrayLike (s) {
   return Array.isArray(s) || isTypedArray(s)
 }
 
-},{"./is-typed-array":42}],41:[function(require,module,exports){
+},{"./is-typed-array":43}],42:[function(require,module,exports){
 var isTypedArray = require('./is-typed-array')
 
 module.exports = function isNDArrayLike (obj) {
@@ -10157,13 +10229,13 @@ module.exports = function isNDArrayLike (obj) {
       isTypedArray(obj.data)))
 }
 
-},{"./is-typed-array":42}],42:[function(require,module,exports){
+},{"./is-typed-array":43}],43:[function(require,module,exports){
 var dtypes = require('../constants/arraytypes.json')
 module.exports = function (x) {
   return Object.prototype.toString.call(x) in dtypes
 }
 
-},{"../constants/arraytypes.json":19}],43:[function(require,module,exports){
+},{"../constants/arraytypes.json":20}],44:[function(require,module,exports){
 module.exports = function loop (n, f) {
   var result = Array(n)
   for (var i = 0; i < n; ++i) {
@@ -10172,7 +10244,7 @@ module.exports = function loop (n, f) {
   return result
 }
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var loop = require('./loop')
 
 var GL_BYTE = 5120
@@ -10266,7 +10338,7 @@ module.exports = {
   freeType: freeType
 }
 
-},{"./loop":43}],45:[function(require,module,exports){
+},{"./loop":44}],46:[function(require,module,exports){
 /* globals requestAnimationFrame, cancelAnimationFrame */
 if (typeof requestAnimationFrame === 'function' &&
     typeof cancelAnimationFrame === 'function') {
@@ -10283,7 +10355,7 @@ if (typeof requestAnimationFrame === 'function' &&
   }
 }
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var pool = require('./pool')
 
 var FLOAT = new Float32Array(1)
@@ -10329,12 +10401,12 @@ module.exports = function convertToHalfFloat (array) {
   return ushorts
 }
 
-},{"./pool":44}],47:[function(require,module,exports){
+},{"./pool":45}],48:[function(require,module,exports){
 module.exports = function (obj) {
   return Object.keys(obj).map(function (key) { return obj[key] })
 }
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 // Context and canvas creation helper functions
 var check = require('./util/check')
 var extend = require('./util/extend')
@@ -10540,7 +10612,7 @@ module.exports = function parseArgs (args_) {
   }
 }
 
-},{"./util/check":36,"./util/extend":39}],49:[function(require,module,exports){
+},{"./util/check":37,"./util/extend":40}],50:[function(require,module,exports){
 var check = require('./lib/util/check')
 var extend = require('./lib/util/extend')
 var dynamic = require('./lib/dynamic')
@@ -11022,7 +11094,7 @@ module.exports = function wrapREGL (args) {
   return regl
 }
 
-},{"./lib/attribute":17,"./lib/buffer":18,"./lib/core":23,"./lib/dynamic":24,"./lib/elements":25,"./lib/extension":26,"./lib/framebuffer":27,"./lib/limits":28,"./lib/read":29,"./lib/renderbuffer":30,"./lib/shader":31,"./lib/stats":32,"./lib/strings":33,"./lib/texture":34,"./lib/timer":35,"./lib/util/check":36,"./lib/util/clock":37,"./lib/util/extend":39,"./lib/util/raf":45,"./lib/webgl":48}],50:[function(require,module,exports){
+},{"./lib/attribute":18,"./lib/buffer":19,"./lib/core":24,"./lib/dynamic":25,"./lib/elements":26,"./lib/extension":27,"./lib/framebuffer":28,"./lib/limits":29,"./lib/read":30,"./lib/renderbuffer":31,"./lib/shader":32,"./lib/stats":33,"./lib/strings":34,"./lib/texture":35,"./lib/timer":36,"./lib/util/check":37,"./lib/util/clock":38,"./lib/util/extend":40,"./lib/util/raf":46,"./lib/webgl":49}],51:[function(require,module,exports){
 function Agent() {
   this._defaults = [];
 }
@@ -11044,7 +11116,7 @@ Agent.prototype._setDefaults = function(req) {
 
 module.exports = Agent;
 
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /**
  * Root reference for iframes.
  */
@@ -11965,7 +12037,7 @@ request.put = (url, data, fn) => {
   return req;
 };
 
-},{"./agent-base":50,"./is-object":52,"./request-base":53,"./response-base":54,"component-emitter":4}],52:[function(require,module,exports){
+},{"./agent-base":51,"./is-object":53,"./request-base":54,"./response-base":55,"component-emitter":4}],53:[function(require,module,exports){
 'use strict';
 
 /**
@@ -11982,7 +12054,7 @@ function isObject(obj) {
 
 module.exports = isObject;
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12679,7 +12751,7 @@ RequestBase.prototype._setTimeouts = function() {
   }
 };
 
-},{"./is-object":52}],54:[function(require,module,exports){
+},{"./is-object":53}],55:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12817,7 +12889,7 @@ ResponseBase.prototype._setStatusProperties = function(status){
     this.unprocessableEntity = 422 == status;
 };
 
-},{"./utils":55}],55:[function(require,module,exports){
+},{"./utils":56}],56:[function(require,module,exports){
 'use strict';
 
 /**
@@ -12884,11 +12956,12 @@ exports.cleanHeader = (header, changesOrigin) => {
   return header;
 };
 
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 const grid = require('pixel-grid');
 const position = require('mouse-position');
 const request = require('superagent');
 const ColorPicker = require('a-color-picker');
+const debounce = require('debounce');
 
 let array;
 let id;
@@ -12932,7 +13005,7 @@ if (document.cookie) {
   loginLink.innerHTML = 'Log out';
   username = getCookie('login');
 } else {
-  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c');
+  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c&scope=repo');
   loginLink.innerHTML = 'Log in';
 }
 
@@ -13038,7 +13111,14 @@ function searchPublicRepos(query) {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ repos: data, userId: getCookie('user'), login: getCookie('login') })
+            .send(
+              {
+                repos: data,
+                userId: getCookie('user'),
+                login: getCookie('login'),
+                accessToken: getCookie('access_token')
+              }
+            )
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
@@ -13059,7 +13139,7 @@ searchBar.onkeypress = (event) => {
   }
 };
 
-searchBar.oninput = () => {
+const search = () => {
   while (menuLeft.firstChild) {
     menuLeft.removeChild(menuLeft.firstChild);
   }
@@ -13099,6 +13179,9 @@ searchBar.oninput = () => {
   }
 };
 
+const debouncedSearch = debounce(search, 500);
+searchBar.addEventListener('keydown', debouncedSearch);
+
 module.exports = n => n * 111;
 
-},{"a-color-picker":1,"mouse-position":12,"pixel-grid":14,"superagent":51}]},{},[56]);
+},{"a-color-picker":1,"debounce":5,"mouse-position":13,"pixel-grid":15,"superagent":52}]},{},[57]);

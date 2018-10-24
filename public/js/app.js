@@ -2,6 +2,7 @@ const grid = require('pixel-grid');
 const position = require('mouse-position');
 const request = require('superagent');
 const ColorPicker = require('a-color-picker');
+const debounce = require('debounce');
 
 let array;
 let id;
@@ -45,7 +46,7 @@ if (document.cookie) {
   loginLink.innerHTML = 'Log out';
   username = getCookie('login');
 } else {
-  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c');
+  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c&scope=repo');
   loginLink.innerHTML = 'Log in';
 }
 
@@ -151,7 +152,14 @@ function searchPublicRepos(query) {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ repos: data, userId: getCookie('user'), login: getCookie('login') })
+            .send(
+              {
+                repos: data,
+                userId: getCookie('user'),
+                login: getCookie('login'),
+                accessToken: getCookie('access_token')
+              }
+            )
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
@@ -172,7 +180,7 @@ searchBar.onkeypress = (event) => {
   }
 };
 
-searchBar.oninput = () => {
+const search = () => {
   while (menuLeft.firstChild) {
     menuLeft.removeChild(menuLeft.firstChild);
   }
@@ -189,7 +197,14 @@ searchBar.oninput = () => {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ repos: data, userId: getCookie('user'), login: getCookie('login') })
+            .send(
+              {
+                repos: data,
+                userId: getCookie('user'),
+                login: getCookie('login'),
+                accessToken: getCookie('access_token')
+              }
+            )
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
@@ -211,5 +226,8 @@ searchBar.oninput = () => {
     cleanElement(menuLeft);
   }
 };
+
+const debouncedSearch = debounce(search, 500);
+searchBar.addEventListener('keydown', debouncedSearch);
 
 module.exports = n => n * 111;

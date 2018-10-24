@@ -32,7 +32,8 @@ const mongoOpt = {
   reconnectTries: conf.db.reconnectTries,
   reconnectInterval: conf.db.reconnectInterval,
 };
-const mongoUrl = process.env.CONFIG;
+// const mongoUrl = process.env.CONFIG;
+const mongoUrl = 'mongodb://localhost:27017/gitart';
 
 // MangoDB connection with retry
 const connectWithRetry = () => {
@@ -98,16 +99,26 @@ app.post('/repo', (req, res) => {
           // Insert user in repositories collection
           // with 0 pixel
           const today = new Date();
-          const newUser = new RepoUsers({
-            user: req.body.userId,
-            lastCommit: today.toISOString().replace(/\s/g, ''),
-            pixels: 0,
-          });
-          newUser.save();
+          
+          request
+            .get(`https://api.github.com/repos/${req.body.repos.owner.login}/${req.body.repos.name}/collaborators/${req.body.login}?access_token=${req.body.accessToken}`)
+            .then((isCollaborator) => {
+              let startingPixels = 0;
+              if (isCollaborator.statusCode === 204) {
+                startingPixels = 10;
+              }
+              const newUser = new RepoUsers({
+                user: req.body.userId,
+                lastCommit: today.toISOString().replace(/\s/g, ''),
+                pixels: startingPixels,
+              });
 
-          newRepo.save();
+              newUser.save();
 
-          res.send({ value: 0, repo: newRepo });
+              newRepo.save();
+
+              res.send({ value: 0, repo: newRepo });
+            });
         } else {
           let totalValue = 0;
           const today = new Date();
@@ -119,12 +130,12 @@ app.post('/repo', (req, res) => {
                 totalValue = repouser.pixels;
 
                 request
-                  .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${req.body.login}&since=${lastCommit}`)
+                  .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${req.body.login}&since=${lastCommit}?access_token=${req.body.accessToken}`)
                   .then((result) => {
                     const promises = [];
                     result.body.forEach((commit) => {
                       promises.push(
-                        request.get(`https://api.github.com/repos/${data.owner}/${data.name}/commits/${commit.sha}`)
+                        request.get(`https://api.github.com/repos/${data.owner}/${data.name}/commits/${commit.sha}?access_token=${req.body.accessToken}`)
                       );
                     });
                     Promise.all(promises)
@@ -141,14 +152,23 @@ app.post('/repo', (req, res) => {
                       });
                   });
               } else {
-                repouser = new RepoUsers({
-                  repo: data._id,
-                  user: req.body.userId,
-                  lastCommit,
-                  pixels: 0
-                });
-                repouser.save();
-                res.send({ value: totalValue, repo: data });
+                request
+                  .get(`https://api.github.com/repos/${req.body.repos.owner.login}/${req.body.repos.name}/collaborators/${req.body.login}?access_token=${req.body.accessToken}`)
+                  .then((isCollaborator) => {
+                    let startingPixels = 0;
+                    if (isCollaborator.statusCode === 204) {
+                      startingPixels = 10;
+                      totalValue = 10;
+                    }
+                    repouser = new RepoUsers({
+                      repo: data._id,
+                      user: req.body.userId,
+                      lastCommit,
+                      pixels: startingPixels
+                    });
+                    repouser.save();
+                    res.send({ value: totalValue, repo: data });
+                  });
               }
             });
         }
