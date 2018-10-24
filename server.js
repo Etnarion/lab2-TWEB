@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
 app.post('/save', (req, res) => {
   Repositories.findById(req.body._id, (err, repo) => {
     repo.canvas = req.body.canvas;
-    RepoUsers.findOne({ user: req.body.user })
+    RepoUsers.findOne({ user: req.body.user, repo: req.body._id })
       .then((foundUser) => {
         const today = new Date();
         foundUser.lastCommit = today.toISOString().replace(/\s/g, '');
