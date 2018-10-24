@@ -32,8 +32,7 @@ const mongoOpt = {
   reconnectTries: conf.db.reconnectTries,
   reconnectInterval: conf.db.reconnectInterval,
 };
-// const mongoUrl = process.env.CONFIG;
-const mongoUrl = 'mongodb://localhost:27017/gitart';
+const mongoUrl = process.env.CONFIG;
 
 // MangoDB connection with retry
 const connectWithRetry = () => {

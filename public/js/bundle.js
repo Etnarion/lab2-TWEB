@@ -12982,8 +12982,6 @@ const pixelsDiv = document.getElementById('pixels');
 
 let nbPixels;
 
-let username;
-
 function getCookie(cname) {
   const name = `${cname}=`;
   const decodedCookie = decodeURIComponent(document.cookie);
@@ -13003,7 +13001,6 @@ function getCookie(cname) {
 if (document.cookie) {
   loginLink.setAttribute('href', '/disconnect');
   loginLink.innerHTML = 'Log out';
-  username = getCookie('login');
 } else {
   loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c&scope=repo');
   loginLink.innerHTML = 'Log in';
@@ -13156,7 +13153,14 @@ const search = () => {
         div.onclick = () => {
           request
             .post('/repo')
-            .send({ repos: data, userId: getCookie('user'), login: getCookie('login') })
+            .send(
+              {
+                repos: data,
+                userId: getCookie('user'),
+                login: getCookie('login'),
+                accessToken: getCookie('access_token')
+              }
+            )
             .type('application/json')
             .then((result) => {
               cleanElement(menuLeft);
