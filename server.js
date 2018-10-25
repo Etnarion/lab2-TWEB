@@ -32,6 +32,7 @@ const mongoOpt = {
   reconnectTries: conf.db.reconnectTries,
   reconnectInterval: conf.db.reconnectInterval,
 };
+
 const mongoUrl = process.env.CONFIG;
 
 // MangoDB connection with retry
@@ -98,12 +99,11 @@ app.post('/repo', (req, res) => {
           // Insert user in repositories collection
           // with 0 pixel
           const today = new Date();
-
           request
-            .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${req.body.login}&since=${data.created_at}?access_token=${req.body.accessToken}`)
+            .get(`https://api.github.com/repos/${req.body.repos.owner.login}/${req.body.repos.name}/commits?author=${req.body.login}&since=${req.body.repos.created_at}?access_token=${req.body.accessToken}`)
             .then((commits) => {
               let startingPixels = 0;
-              if (commits.body.size > 0) {
+              if (commits.body.length > 0) {
                 startingPixels = 10;
               }
               const newUser = new RepoUsers({
