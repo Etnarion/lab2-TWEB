@@ -98,12 +98,12 @@ app.post('/repo', (req, res) => {
           // Insert user in repositories collection
           // with 0 pixel
           const today = new Date();
-          
+
           request
-            .get(`https://api.github.com/repos/${req.body.repos.owner.login}/${req.body.repos.name}/collaborators/${req.body.login}?access_token=${req.body.accessToken}`)
-            .then((isCollaborator) => {
+            .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${req.body.login}&since=${data.created_at}?access_token=${req.body.accessToken}`)
+            .then((commits) => {
               let startingPixels = 0;
-              if (isCollaborator.statusCode === 204) {
+              if (commits.body.size > 0) {
                 startingPixels = 10;
               }
               const newUser = new RepoUsers({
@@ -116,7 +116,7 @@ app.post('/repo', (req, res) => {
 
               newRepo.save();
 
-              res.send({ value: 0, repo: newRepo });
+              res.send({ value: startingPixels, repo: newRepo });
             });
         } else {
           let totalValue = 0;
