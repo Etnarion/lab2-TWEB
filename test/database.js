@@ -33,7 +33,17 @@ describe('describe', () => {
     newRepo.save(done);
   });
 
-  it('autre test')
+  it('should find a repo by its owner', (done) => {
+    Repositories.find({ owner: 'Sasha' }, (err, repo) => {
+      if (err) {
+        throw err;
+      }
+      if (repo.length === 0) {
+        throw new Error('not found');
+      }
+      done();
+    });
+  });
 });
 
 after((done) => {
