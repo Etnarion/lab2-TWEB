@@ -16,7 +16,7 @@ before((done) => {
 });
 
 describe('describe', () => {
-  it('should find the previously saved repo', (done) => {
+  it('should be possible to add a repository in the database', (done) => {
     // Creating a 3x4 canva
     const array = new Array(3);
     for (let i = 0; i < 3; i++) {
