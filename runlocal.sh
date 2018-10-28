@@ -9,7 +9,7 @@ docker run -d -p 27017:27017 --name gitart mongodb
 echo 'Waiting mongodb to start...'
 sleep 5
 echo 'Executing DB script...'
-mongo < script.js
+docker exec gitart bash -c "mongo < /data/script.js"
 echo 'Starting Node.js...'
 export ENV=local
 export CONFIG=mongodb://localhost:27017/gitart
