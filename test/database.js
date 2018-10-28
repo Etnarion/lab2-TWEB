@@ -4,9 +4,16 @@ const expect = chai.expect;
 const MongoDB = require('mongodb');
 const mongoose = require('mongoose');
 const Repositories = require('../models/repositories.js');
+const conf = require('../conf.json');
+
+const mongoOpt = {
+  useNewUrlParser: true,
+  reconnectTries: conf.db.reconnectTries,
+  reconnectInterval: conf.db.reconnectInterval,
+};
 
 before((done) => {
-  mongoose.connect('mongodb://localhost:27017/gitart');
+  mongoose.connect('mongodb://localhost:27017/gitart', mongoOpt);
   const db = mongoose.connection;
   db.on('error', console.error.bind(console, 'connection error'));
   db.once('open', () => {

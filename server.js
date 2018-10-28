@@ -1,3 +1,9 @@
+/**
+ * Express server with GitHub API authentication. Serves an application for Gitart
+ * that's used to draw pixel art for each repository in which a commit has been made
+ * Authors: Samuel Mayor and Alexandra Korukova
+ */
+
 // Imports
 const express = require('express');
 const cors = require('cors');
