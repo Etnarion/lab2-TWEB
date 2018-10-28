@@ -172,10 +172,10 @@ app.post('/repo', (req, res) => {
                   });
               } else {
                 request
-                  .get(`https://api.github.com/repos/${req.body.repos.owner.login}/${req.body.repos.name}/collaborators/${req.body.login}?access_token=${req.body.accessToken}`)
-                  .then((isCollaborator) => {
+                  .get(`https://api.github.com/repos/${req.body.repos.owner.login}/${req.body.repos.name}/commits?author=${req.body.login}&since=${req.body.repos.created_at}?access_token=${req.body.accessToken}`)
+                  .then((commits) => {
                     let startingPixels = 0;
-                    if (isCollaborator.statusCode === 204) {
+                    if (commits.body.length > 0) {
                       startingPixels = 10;
                       totalValue = 10;
                     }
