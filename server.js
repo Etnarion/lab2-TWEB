@@ -38,11 +38,9 @@ const environment = process.env.ENV;
 let clientId;
 let clientSecret;
 if (environment === 'local') {
-  console.log('yes');
   clientId = '6ebffe27fc6d66fb4546';
   clientSecret = '8e81ac372125aaa83f1f0dd5636a3b38975031c2';
 } else {
-  console.log('no');
   clientId = '4100c6839f33b3b4f29c';
   clientSecret = 'd4e15a1fe2e5a69ff03fc2b8f728fad75640dbc6';
 }
@@ -68,6 +66,10 @@ connectWithRetry();
 const server = app.listen(process.env.PORT || 8000, () => {
   console.log('Node server listening at http://%s:%s', server.address().address, server.address().port);
 });
+
+app.get('/home', (req, res) => {
+  
+})
 
 app.get('/clientId', (req, res) => {
   res.send(clientId);

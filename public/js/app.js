@@ -20,6 +20,7 @@ let colorPick = '#fff';
 
 const loginLink = document.getElementById('loginLink');
 const pixelsDiv = document.getElementById('pixels');
+const searchBar = document.getElementById('searchBar');
 
 let nbPixels;
 
@@ -40,12 +41,14 @@ function getCookie(cname) {
 }
 
 if (document.cookie) {
+  searchBar.style.visibility = 'visible';
   loginLink.setAttribute('href', '/disconnect');
   loginLink.innerHTML = 'Log out';
 } else {
   request
     .get('/clientId')
     .then((res) => {
+      searchBar.style.visibility = 'hidden';
       loginLink.setAttribute('href', `https://github.com/login/oauth/authorize?client_id=${res.text}&scope=repo`);
       loginLink.innerHTML = 'Log in';
     });
@@ -174,7 +177,6 @@ function searchPublicRepos(query) {
 }
 
 // Triggers public repos search when pressing enter key
-const searchBar = document.getElementById('searchBar');
 searchBar.onkeypress = (event) => {
   if (event.keyCode === 13) {
     searchPublicRepos(searchBar.value);

@@ -12,6 +12,7 @@ body {
     flex-direction: row;
     align-items: center;
     color: white;
+    height: 45px;
 }
 
 .header a {
@@ -85,4 +86,9 @@ body {
 #content canvas {
     background-color: aliceblue;
     border: 1px solid rgb(71, 71, 71);
+}
+
+#searchBar {
+    background-color: rgb(78, 78, 78); 
+    color:white;
 }
