@@ -67,10 +67,6 @@ const server = app.listen(process.env.PORT || 8000, () => {
   console.log('Node server listening at http://%s:%s', server.address().address, server.address().port);
 });
 
-app.get('/home', (req, res) => {
-  
-})
-
 app.get('/clientId', (req, res) => {
   res.send(clientId);
 });
@@ -153,7 +149,7 @@ app.post('/repo', (req, res) => {
                     Promise.all(promises)
                       .then((commits) => {
                         commits.forEach((commit) => {
-                          totalValue += Math.round((commit.body.stats.total / 15) + 1);
+                          totalValue += Math.round((commit.body.stats.total / 10) + 1);
                         });
                         if (totalValue > 0) {
                           repouser.lastCommit = today.toISOString().replace(/\s/g, '');

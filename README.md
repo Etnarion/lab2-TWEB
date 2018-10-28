@@ -4,5 +4,5 @@ Presents a pixel art drawing for each repository on GitHub. Commiting on reposit
 ### Prerequisites
 This has only been tested on Linux Mint. The startup script cannot be run on Windows.
 ### Dev environment
-To run it locally, run the runlocal.sh script and go to localhost:8000.
+To run it locally, run the runlocal.sh script and go to localhost:8000
 
