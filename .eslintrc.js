@@ -8,6 +8,10 @@ module.exports = {
         "comma-dangle": [0]
       },
     "globals": {
-        "document": true
+        "document": true,
+        "describe": true,
+        "it": true,
+        "before": true,
+        "after": true
       },
 };
