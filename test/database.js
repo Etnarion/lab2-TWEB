@@ -5,6 +5,7 @@ const MongoDB = require('mongodb');
 const mongoose = require('mongoose');
 const Repositories = require('../models/repositories.js');
 const conf = require('../conf.json');
+const mergeCanvas = require('../server.js');
 
 const mongoOpt = {
   useNewUrlParser: true,
@@ -51,6 +52,31 @@ describe('describe', () => {
       expect(repo[0].name).to.equals('TestRepo');
       done();
     });
+  });
+
+  it('should merge DB canvas with a new one', (done) => {
+    const dbCanvas = [
+      ['b', 'b', 'b'],
+      ['a', 'a', 'a'],
+      ['a', 'a', 'a']
+    ];
+    const newCanvas = [
+      ['a', 'a', 'a'],
+      ['a', 'b', 'a'],
+      ['a', 'a', 'a']
+    ];
+    const changedPixels = [
+      [0, 0, 0],
+      [0, 1, 0],
+      [0, 0, 0]
+    ];
+    const expectedCanvas = [
+      ['b', 'b', 'b'],
+      ['a', 'b', 'a'],
+      ['a', 'a', 'a']
+    ];
+    expect(mergeCanvas(dbCanvas, newCanvas, changedPixels)).to.equals(expectedCanvas);
+    done();
   });
 });
 
