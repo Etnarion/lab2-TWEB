@@ -116,6 +116,7 @@ app.post('/repo', (req, res) => {
                 startingPixels = 10;
               }
               const newUser = new RepoUsers({
+                repo: newRepo._id,
                 user: req.body.userId,
                 lastCommit: today.toISOString().replace(/\s/g, ''),
                 pixels: startingPixels,
