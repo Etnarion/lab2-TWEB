@@ -176,13 +176,6 @@ function searchPublicRepos(query) {
     });
 }
 
-// Triggers public repos search when pressing enter key
-searchBar.onkeypress = (event) => {
-  if (event.keyCode === 13) {
-    searchPublicRepos(searchBar.value);
-  }
-};
-
 const search = () => {
   while (menuLeft.firstChild) {
     menuLeft.removeChild(menuLeft.firstChild);
@@ -232,5 +225,13 @@ const search = () => {
 
 const debouncedSearch = debounce(search, 500);
 searchBar.addEventListener('keydown', debouncedSearch);
+
+// Triggers public repos search when pressing enter key
+searchBar.onkeypress = (event) => {
+  if (event.keyCode === 13) {
+    debouncedSearch.clear();
+    searchPublicRepos(searchBar.value);
+  }
+};
 
 module.exports = n => n * 111;
