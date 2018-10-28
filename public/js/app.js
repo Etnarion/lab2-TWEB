@@ -58,6 +58,10 @@ function changePixels(value) {
   pixelsDiv.innerHTML = `Pixels: ${value}`;
 }
 
+/**
+ * Display a repository canvas
+ * @param {*} repo Repository to display
+ */
 function showRepoCanvas(repo) {
   // clears current grid
   const gridArea = document.getElementById('gridArea');
@@ -76,6 +80,12 @@ function showRepoCanvas(repo) {
   id = repo._id;
   array = repo.canvas;
 
+  const changedPixels = new Array(array.length);
+  for (let i = 0; i < array.length; i++) {
+    changedPixels[i] = new Array(array[i].length);
+    changedPixels[i].fill(0);
+  }
+
   pixels = grid(array, {
     size,
     padding,
@@ -84,6 +94,8 @@ function showRepoCanvas(repo) {
 
   const mouseGrid = position(pixels.canvas);
 
+  // set onclick event on pixels to decrease pixel count, color the cell
+  // and set pixel as changed
   pixels.canvas.onclick = () => {
     if (nbPixels > 0) {
       nbPixels -= 1;
@@ -91,6 +103,7 @@ function showRepoCanvas(repo) {
       row = Math.floor(mouseGrid[1] / pixelOffset);
       column = Math.floor(mouseGrid[0] / pixelOffset);
       color = colorPick;
+      changedPixels[row][column] = 1;
       array[row][column] = color;
       pixels.update(array);
       btnSave.innerHTML = 'Save';
@@ -104,6 +117,7 @@ function showRepoCanvas(repo) {
       .post('/save')
       .send({
         _id: id,
+        changedPixels,
         canvas: array,
         user: getCookie('user'),
         pixels: nbPixels
@@ -141,6 +155,10 @@ function cleanElement(element) {
 
 const menuLeft = document.getElementById('menuLeft');
 
+/**
+ * Search public repositories via GitHub api base on query
+ * @param {*} query keyword for repository search on GitHub
+ */
 function searchPublicRepos(query) {
   request
     .get(`https://api.github.com/search/repositories?q=${query}&access_token=${getCookie('access_token')}`)
@@ -176,6 +194,9 @@ function searchPublicRepos(query) {
     });
 }
 
+/**
+ * Search in database for a repository with the name of search bar value
+ */
 const search = () => {
   while (menuLeft.firstChild) {
     menuLeft.removeChild(menuLeft.firstChild);

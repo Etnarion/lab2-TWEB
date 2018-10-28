@@ -33,6 +33,8 @@ const mongoOpt = {
   reconnectInterval: conf.db.reconnectInterval,
 };
 
+const CANVASWIDTH = 120;
+const CANVASHEIGHT = 160;
 const mongoUrl = process.env.CONFIG;
 const environment = process.env.ENV;
 let clientId;
@@ -71,9 +73,26 @@ app.get('/clientId', (req, res) => {
   res.send(clientId);
 });
 
+function mergeCanvas(dbCanvas, changedCanvas, changedPixels) {
+  const newArray = new Array(CANVASWIDTH);
+  for (let i = 0; i < CANVASWIDTH; i++) {
+    newArray[i] = new Array(CANVASHEIGHT);
+  }
+  for (let i = 0; i < CANVASWIDTH; i++) {
+    for (let j = 0; j < CANVASHEIGHT; j++) {
+      if (changedPixels[i][j] === 1) {
+        newArray[i][j] = changedCanvas[i][j];
+      } else {
+        newArray[i][j] = dbCanvas[i][j];
+      }
+    }
+  }
+  return newArray;
+}
+
 app.post('/save', (req, res) => {
   Repositories.findById(req.body._id, (err, repo) => {
-    repo.canvas = req.body.canvas;
+    repo.canvas = mergeCanvas(repo.canvas, req.body.canvas, req.body.changedPixels);
     RepoUsers.findOne({ user: req.body.user, repo: req.body._id })
       .then((foundUser) => {
         const today = new Date();
@@ -92,9 +111,9 @@ app.post('/repo', (req, res) => {
     .then(
       (data) => {
         if (data == null) {
-          const array = new Array(120);
-          for (let i = 0; i < 120; i++) {
-            array[i] = new Array(160);
+          const array = new Array(CANVASWIDTH);
+          for (let i = 0; i < CANVASWIDTH; i++) {
+            array[i] = new Array(CANVASHEIGHT);
             array[i].fill('#fff');
           }
 
