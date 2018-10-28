@@ -144,7 +144,7 @@ app.post('/repo', (req, res) => {
           let lastCommit = today.toISOString().replace(/\s/g, '');
           RepoUsers.findOne({ user: req.body.userId, repo: data._id })
             .then((repouser) => {
-              if (repouser != null) {
+              if (repouser !== null) {
                 lastCommit = repouser.lastCommit;
                 totalValue = repouser.pixels;
 
