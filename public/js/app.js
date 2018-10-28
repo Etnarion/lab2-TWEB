@@ -43,8 +43,12 @@ if (document.cookie) {
   loginLink.setAttribute('href', '/disconnect');
   loginLink.innerHTML = 'Log out';
 } else {
-  loginLink.setAttribute('href', 'https://github.com/login/oauth/authorize?client_id=4100c6839f33b3b4f29c&scope=repo');
-  loginLink.innerHTML = 'Log in';
+  request
+    .get('/clientId')
+    .then((res) => {
+      loginLink.setAttribute('href', `https://github.com/login/oauth/authorize?client_id=${res.text}&scope=repo`);
+      loginLink.innerHTML = 'Log in';
+    });
 }
 
 function changePixels(value) {
