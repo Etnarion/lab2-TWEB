@@ -1,3 +1,10 @@
+/**
+ * Gitart
+ * Client side application that's used to draw pixel art for each repository in 
+ * which a commit has been made
+ * Authors: Samuel Mayor and Alexandra Korukova
+ */
+
 const grid = require('pixel-grid');
 const position = require('mouse-position');
 const request = require('superagent');

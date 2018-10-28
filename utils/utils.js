@@ -1,3 +1,8 @@
+/**
+ * Utility module for Gitart application
+ * Authors: Samuel Mayor and Alexandra Korukova
+ */
+
 function mergeCanvas(dbCanvas, changedCanvas, changedPixels) {
   const newArray = new Array(dbCanvas.length);
   for (let i = 0; i < dbCanvas.length; i++) {

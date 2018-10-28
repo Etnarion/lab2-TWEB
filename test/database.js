@@ -1,3 +1,8 @@
+/**
+ * Tests for Gitart application
+ * Authors: Samuel Mayor and Alexandra Korukova
+ */
+
 const chai = require('chai');
 
 const expect = chai.expect;
