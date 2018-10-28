@@ -21,6 +21,8 @@ const Repositories = require('./models/repositories.js');
 const Users = require('./models/users.js');
 const RepoUsers = require('./models/repousers.js');
 
+const utils = require('./utils/utils.js');
+
 const corsOptions = {
   optionsSuccessStatus: 200,
 };
@@ -79,26 +81,9 @@ app.get('/clientId', (req, res) => {
   res.send(clientId);
 });
 
-function mergeCanvas(dbCanvas, changedCanvas, changedPixels) {
-  const newArray = new Array(CANVASWIDTH);
-  for (let i = 0; i < CANVASWIDTH; i++) {
-    newArray[i] = new Array(CANVASHEIGHT);
-  }
-  for (let i = 0; i < CANVASWIDTH; i++) {
-    for (let j = 0; j < CANVASHEIGHT; j++) {
-      if (changedPixels[i][j] === 1) {
-        newArray[i][j] = changedCanvas[i][j];
-      } else {
-        newArray[i][j] = dbCanvas[i][j];
-      }
-    }
-  }
-  return newArray;
-}
-
 app.post('/save', (req, res) => {
   Repositories.findById(req.body._id, (err, repo) => {
-    repo.canvas = mergeCanvas(repo.canvas, req.body.canvas, req.body.changedPixels);
+    repo.canvas = utils.mergeCanvas(repo.canvas, req.body.canvas, req.body.changedPixels);
     RepoUsers.findOne({ user: req.body.user, repo: req.body._id })
       .then((foundUser) => {
         const today = new Date();

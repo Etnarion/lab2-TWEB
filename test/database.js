@@ -5,7 +5,7 @@ const MongoDB = require('mongodb');
 const mongoose = require('mongoose');
 const Repositories = require('../models/repositories.js');
 const conf = require('../conf.json');
-const mergeCanvas = require('../server.js');
+const utils = require('../utils/utils.js');
 
 const mongoOpt = {
   useNewUrlParser: true,
@@ -75,7 +75,7 @@ describe('describe', () => {
       ['a', 'b', 'a'],
       ['a', 'a', 'a']
     ];
-    expect(mergeCanvas(dbCanvas, newCanvas, changedPixels)).to.equals(expectedCanvas);
+    expect(utils.mergeCanvas(dbCanvas, newCanvas, changedPixels)).to.eql(expectedCanvas);
     done();
   });
 });
