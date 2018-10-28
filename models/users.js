@@ -7,5 +7,4 @@ const users = new Schema({
   gitId: String
 }, {collection: 'user'})
 
-module.exports = mongoose.model('user', users)
-
+module.exports = mongoose.model('user', users);
