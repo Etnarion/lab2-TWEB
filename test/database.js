@@ -48,6 +48,7 @@ describe('describe', () => {
       if (repo.length === 0) {
         throw new Error('not found');
       }
+      expect(repo[0].name).to.equals('TestRepo');
       done();
     });
   });
