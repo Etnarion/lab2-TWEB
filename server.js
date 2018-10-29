@@ -144,7 +144,7 @@ app.post('/repo', (req, res) => {
           let lastCommit = today.toISOString().replace(/\s/g, '');
           RepoUsers.findOne({ user: req.body.userId, repo: data._id })
             .then((repouser) => {
-              if (repouser !== null) {
+              if (repouser != null) {
                 lastCommit = repouser.lastCommit;
                 totalValue = repouser.pixels;
 
@@ -171,8 +171,9 @@ app.post('/repo', (req, res) => {
                       });
                   });
               } else {
+                console.log(req.body.repos);
                 request
-                  .get(`https://api.github.com/repos/${req.body.repos.owner.login}/${req.body.repos.name}/commits?author=${req.body.login}&since=${req.body.repos.created_at}?access_token=${req.body.accessToken}`)
+                  .get(`https://api.github.com/repos/${data.owner}/${data.name}/commits?author=${req.body.login}&since=2010-10-29T09:32:53.188Z?access_token=${req.body.accessToken}`)
                   .then((commits) => {
                     let startingPixels = 0;
                     if (commits.body.length > 0) {
